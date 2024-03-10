@@ -58,19 +58,18 @@
                 android:src="@drawable/frame_cat"
                 android:visibility="visible"
                 android:layout_centerVertical="true"/>
-            <androidx.appcompat.widget.AppCompatButton
+            <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_toRightOf="@+id/iv_main_avatar_frame"
+                android:layout_centerVertical="true"
                 android:paddingRight="15dp"
                 android:paddingLeft="5dp"
                 android:maxLength="25"
                 android:text="Foxie2003"
                 android:fontFamily="sans-serif-condensed-medium"
                 android:textColor="@color/white"
-                android:textSize="22sp"
-                android:textAllCaps="false"
-                android:background="@drawable/button_round_right"/>
+                android:textSize="22sp"/>
         </RelativeLayout>
         <RelativeLayout
             android:layout_width="wrap_content"
