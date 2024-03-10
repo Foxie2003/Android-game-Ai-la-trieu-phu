@@ -13,10 +13,10 @@
         android:theme="@style/Theme.AiLaTrieuPhu"
         tools:targetApi="31">
         <activity
-            android:name=".PlayActivity"
+            android:name=".MainActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".PlayActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

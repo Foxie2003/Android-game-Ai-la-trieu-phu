@@ -5,7 +5,7 @@
             <corners android:bottomLeftRadius="100dp"
                 android:topLeftRadius="100dp"/>
             <solid android:color="@android:color/transparent"/>
-            <stroke android:color="@android:color/white"
+            <stroke android:color="#80FFFFFF"
                 android:width="2dp"/>
         </shape>
     </item>
@@ -14,7 +14,7 @@
             <corners android:bottomLeftRadius="100dp"
                 android:topLeftRadius="100dp"/>
             <solid android:color="@android:color/transparent"/>
-            <stroke android:color="@android:color/white"
+            <stroke android:color="#80FFFFFF"
                 android:width="2dp"/>
         </shape>
     </item>
@@ -24,9 +24,9 @@
         <shape android:shape="rectangle">
             <corners android:bottomLeftRadius="100dp"
                 android:topLeftRadius="100dp"/>
-            <gradient android:startColor="#156B94"
-                android:centerColor="#09093E"
-                android:endColor="#156B94"
+            <gradient android:startColor="#80156B94"
+                android:centerColor="#8009093E"
+                android:endColor="#80156B94"
                 android:angle="90"/>
         </shape>
     </item>
