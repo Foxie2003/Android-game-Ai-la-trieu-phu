@@ -9,11 +9,11 @@ public class Question {
     private String answer3;
     private String answer4;
     private int correctAnswer;
-//    private String audioURL;
+    private String audioFileName;
     public Question() {
     }
 
-    public Question(int id, int questionNumber, String question, String answer1, String answer2, String answer3, String answer4, int correctAnswer) {
+    public Question(int id, int questionNumber, String question, String answer1, String answer2, String answer3, String answer4, int correctAnswer, String audioFileName) {
         this.id = id;
         this.questionNumber = questionNumber;
         this.question = question;
@@ -22,6 +22,19 @@ public class Question {
         this.answer3 = answer3;
         this.answer4 = answer4;
         this.correctAnswer = correctAnswer;
+        this.audioFileName = audioFileName;
+    }
+
+    public Question(Question question) {
+        this.id = question.id;
+        this.questionNumber = question.questionNumber;
+        this.question = question.question;
+        this.answer1 = question.answer1;
+        this.answer2 = question.answer2;
+        this.answer3 = question.answer3;
+        this.answer4 = question.answer4;
+        this.correctAnswer = question.correctAnswer;
+        this.audioFileName = question.audioFileName;
     }
 
     public int getId() {
@@ -86,5 +99,13 @@ public class Question {
 
     public void setCorrectAnswer(int correctAnswer) {
         this.correctAnswer = correctAnswer;
+    }
+
+    public String getAudioFileName() {
+        return audioFileName;
+    }
+
+    public void setAudioFileName(String audioFileName) {
+        this.audioFileName = audioFileName;
     }
 }
