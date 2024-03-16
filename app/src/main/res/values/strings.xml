@@ -1,3 +1,18 @@
 <resources>
-    <string name="app_name">AiLaTrieuPhu</string>
+    <string name="app_name">Ai là phú</string>
+    <string name="prize_money_1">1. 200.000</string>
+    <string name="prize_money_2">2. 400.000</string>
+    <string name="prize_money_3">3. 600.000</string>
+    <string name="prize_money_4">4. 1.000.000</string>
+    <string name="prize_money_5">5. 2.000.000</string>
+    <string name="prize_money_6">6. 3.000.000</string>
+    <string name="prize_money_7">7. 6.000.000</string>
+    <string name="prize_money_8">8. 10.000.000</string>
+    <string name="prize_money_9">9. 14.000.000</string>
+    <string name="prize_money_10">10. 22.000.000</string>
+    <string name="prize_money_11">11. 30.000.000</string>
+    <string name="prize_money_12">12. 40.000.000</string>
+    <string name="prize_money_13">13. 60.000.000</string>
+    <string name="prize_money_14">14. 85.000.000</string>
+    <string name="prize_money_15">15. 150.000.000</string>
 </resources>

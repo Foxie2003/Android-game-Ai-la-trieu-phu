@@ -25,7 +25,7 @@ public class GradientTextView extends androidx.appcompat.widget.AppCompatTextVie
     @Override
     protected void onDraw(Canvas canvas) {
         Paint paint = getPaint();
-        // Tạo một gradient từ màu đỏ đến màu xanh dương theo chiều ngang
+        // Tạo một gradient theo chiều ngang
         @SuppressLint("DrawAllocation") Shader shader = new LinearGradient(0, 0, 0, getHeight(),
                 new int[]{0xFFffffff, 0xFF81a6d0},
                 null, Shader.TileMode.CLAMP);
