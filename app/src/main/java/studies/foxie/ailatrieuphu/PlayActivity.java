@@ -7,12 +7,16 @@ import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import android.animation.ValueAnimator;
+import android.app.Dialog;
+import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -21,6 +25,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -41,7 +46,7 @@ public class PlayActivity extends AppCompatActivity {
     private SoundManager soundManager;
     private boolean playerIsReady = false;
     private Question question;
-    private ArrayList<Integer> questionNumberSounds, answerSounds, answerCorrectSounds;
+    private ArrayList<Integer> questionNumberSounds, answerSounds, answerCorrectSounds, answerWrongSounds;
     private ArrayList<AppCompatButton> answerButtons;
     private ArrayList<Integer> prizeMoneys = new ArrayList<>(Arrays.asList(200, 400, 600,
             1000, 2000, 3000, 6000, 10000, 14000, 22000, 30000, 40000, 60000, 85000, 150000));
@@ -158,6 +163,12 @@ public class PlayActivity extends AppCompatActivity {
         answerCorrectSounds.add(R.raw.true_4_2);
         answerCorrectSounds.add(R.raw.true_4_3);
 
+        answerWrongSounds = new ArrayList<>();
+        answerWrongSounds.add(R.raw.lose_a);
+        answerWrongSounds.add(R.raw.lose_b);
+        answerWrongSounds.add(R.raw.lose_c);
+        answerWrongSounds.add(R.raw.lose_d);
+
         //Thêm button vào array list để tiện sử dụng
         answerButtons = new ArrayList<>();
         answerButtons.add(btnAnswerA);
@@ -249,6 +260,42 @@ public class PlayActivity extends AppCompatActivity {
             public void onClick(View v) {
                 //Xử lý kiểm tra đáp án đúng
                 checkAnswer(4);
+            }
+        });
+
+        //Test các trợ giúp
+        btn5050.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                for (int i = 0; i < 2;) {
+                    // Khởi tạo một đối tượng của lớp Random
+                    Random random = new Random();
+                    // Đặt giá trị tối thiểu và tối đa
+                    int max = 4;
+                    int min = 1;
+                    // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
+                    int randomNumber = random.nextInt(max - min + 1) + min;
+                    if(randomNumber != question.getCorrectAnswer()) {
+                        AppCompatButton answerButton = answerButtons.get(randomNumber - 1);
+                        if (answerButton.getText() != null) {
+                            answerButton.setText(null);
+                            answerButton.setEnabled(false);
+                            i++;
+                        }
+                    }
+                }
+            }
+        });
+        btnAskAudience.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(PlayActivity.this, "Tổ tư vấn: " + question.getCorrectAnswer(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        btnCall.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(PlayActivity.this, "Người thân: " + question.getCorrectAnswer(), Toast.LENGTH_SHORT).show();
             }
         });
     }
@@ -490,7 +537,9 @@ public class PlayActivity extends AppCompatActivity {
     //Hàm kiểm tra đáp án đúng
     private void checkAnswer(int answerIndex) {
         //Dừng đồng hồ đếm ngược
-        countDownTimer.cancel();
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
         //Ngăn không cho người dùng bấm nút
         disableAllButtons();
         //Highlight đáp án được chọn
@@ -502,38 +551,55 @@ public class PlayActivity extends AppCompatActivity {
         int min = max - 2;
         // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
         int randomNumber = random.nextInt(max - min + 1) + min;
-        //Phát ngẫu nhiên 1 trong 3 âm thanh đáp án đã chọn
-        soundManager.playSound(answerSounds.get(randomNumber));
+        //Phát âm thanh chọn câu hỏi
+        soundManager.playSound(R.raw.bg_select_ans);
         soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 soundManager.removeOnCompletionListener();
-                //Highlight đáp án đúng
-                Animation flashingAnimation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.flashing);
-                answerButtons.get(question.getCorrectAnswer() - 1).startAnimation(flashingAnimation);
-                answerButtons.get(question.getCorrectAnswer() - 1).setBackgroundResource(R.drawable.question_correct);
-                //Nếu đáp án đúng
-                if(answerIndex == question.getCorrectAnswer()) {
-                    //Phát âm thanh chúc mừng
-                    soundManager.playSound(answerCorrectSounds.get(randomNumber));
-                    soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                        @Override
-                        public void onCompletion(MediaPlayer mp) {
-                            soundManager.removeOnCompletionListener();
-                            //Kích hoạt các button trở lại
-                            enableAllButtons();
-                            //Bỏ highlight đáp án được chọn
-                            answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
-                            //Load câu hỏi tiếp theo
-                            question = database.getQuestionByQN(question.getQuestionNumber() + 1);
-                            loadQuestion(question);
+                //Phát ngẫu nhiên 1 trong 3 âm thanh đáp án đã chọn
+                soundManager.playSound(answerSounds.get(randomNumber));
+                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        soundManager.removeOnCompletionListener();
+                        //Highlight đáp án đúng
+                        Animation flashingAnimation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.flashing);
+                        answerButtons.get(question.getCorrectAnswer() - 1).startAnimation(flashingAnimation);
+                        answerButtons.get(question.getCorrectAnswer() - 1).setBackgroundResource(R.drawable.question_correct);
+                        //Nếu đáp án đúng
+                        if(answerIndex == question.getCorrectAnswer()) {
+                            //Phát âm thanh chúc mừng
+                            soundManager.playSound(answerCorrectSounds.get(randomNumber));
+                            soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    soundManager.removeOnCompletionListener();
+                                    //Kích hoạt các button trở lại
+                                    enableAllButtons();
+                                    //Bỏ highlight đáp án được chọn
+                                    answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
+                                    //Load câu hỏi tiếp theo
+                                    question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+                                    loadQuestion(question);
+                                }
+                            });
                         }
-                    });
-                }
-                //Nếu đáp án sai
-                else  {
-                    Toast.makeText(PlayActivity.this, "Bạn đã trả lời sai", Toast.LENGTH_SHORT).show();
-                }
+                        //Nếu đáp án sai
+                        else  {
+                            //Phát âm thanh đáp án sai
+                            soundManager.playSound(answerWrongSounds.get(question.getCorrectAnswer() - 1));
+                            soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                @Override
+                                public void onCompletion(MediaPlayer mp) {
+                                    soundManager.removeOnCompletionListener();
+                                    //Hiển thị dialog kết thúc trò chơi
+                                    showGameOverDialog();
+                                }
+                            });
+                        }
+                    }
+                });
             }
         });
     }
@@ -563,5 +629,52 @@ public class PlayActivity extends AppCompatActivity {
         btnAskAudience.setEnabled(true);
         btnCall.setEnabled(true);
         btnChangeQuestion.setEnabled(true);
+    }
+    //Hàm hiển thị dialog kết thúc trò chơi
+    private void showGameOverDialog() {
+        //Phát âm thanh kết thúc trò chơi
+        soundManager.playSound(R.raw.mc_game_over);
+        //Hiển thị dialog kết thúc trò chơi
+        FullScreenDialog gameoverDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_game_over);
+        gameoverDialog.setCancelable(false);
+        gameoverDialog.show();
+        TextView tvPrizeResult = gameoverDialog.findViewById(R.id.tv_gameover_prize);
+        TextView tvQuestionNumber = gameoverDialog.findViewById(R.id.tv_gameover_question_number);
+        TextView tvHighQN = gameoverDialog.findViewById(R.id.tv_gameover_high_question_number);
+        AppCompatButton btnGoHome = gameoverDialog.findViewById(R.id.btn_gameover_home);
+        AppCompatButton btnTryAgain = gameoverDialog.findViewById(R.id.btn_gameover_try_again);
+        //Hiển thị số tiền thắng
+        tvPrizeResult.setText(tvPrize.getText() + " VND");
+        //Hiển thị số câu và kỉ lục
+        tvQuestionNumber.setText("Câu số: " + question.getQuestionNumber());
+        tvHighQN.setText("Kỉ lục: " + 15);
+        btnGoHome.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                PlayActivity.this.finish();
+            }
+        });
+        btnTryAgain.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Bỏ highlight đáp án đúng
+                answerButtons.get(question.getCorrectAnswer() - 1).setBackgroundResource(R.drawable.button_selector);
+                //Bỏ highlight đáp án được chọn
+                answerButtons.forEach(button -> {
+                    button.setBackgroundResource(R.drawable.button_selector);
+                });
+                //Ẩn dialog kết thúc trò chơi
+                gameoverDialog.dismiss();
+                // Ẩn thanh công cụ (navigation bar)
+                View decorView = getWindow().getDecorView();
+                int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
+                decorView.setSystemUiVisibility(uiOptions);
+                //Kích hoạt các button trở lại
+                enableAllButtons();
+                //Load lại câu hỏi
+                question = database.getQuestionByQN(question.getQuestionNumber());
+                loadQuestion(question);
+            }
+        });
     }
 }
