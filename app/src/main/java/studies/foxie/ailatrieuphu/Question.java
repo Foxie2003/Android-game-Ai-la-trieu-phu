@@ -97,6 +97,21 @@ public class Question {
         return correctAnswer;
     }
 
+    public String getCorrectAnswerString() {
+        switch (correctAnswer) {
+            case (1):
+                return "A";
+            case (2):
+                return "B";
+            case (3):
+                return "C";
+            case (4):
+                return "D";
+            default:
+                return "";
+        }
+    }
+
     public void setCorrectAnswer(int correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
