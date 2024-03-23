@@ -15,7 +15,9 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Display;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,6 +37,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.google.android.gms.ads.AdError;
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdSize;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.FullScreenContentCallback;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 
 import java.text.DecimalFormat;
 import java.util.ArrayList;
@@ -46,7 +59,8 @@ public class PlayActivity extends AppCompatActivity {
     private SoundManager soundManager;
     private boolean playerIsReady = false;
     private Question question;
-    private ArrayList<Integer> questionNumberSounds, answerSounds, answerCorrectSounds, answerWrongSounds;
+    private ArrayList<Integer> questionNumberSounds, answerSounds, answerCorrectSounds,
+            answerWrongSounds, helpAnswerSounds;
     private ArrayList<AppCompatButton> answerButtons;
     private ArrayList<TextView> questionNumberTextViews;
     private ArrayList<Integer> prizeMoneys = new ArrayList<>(Arrays.asList(200000, 400000, 600000,
@@ -57,14 +71,15 @@ public class PlayActivity extends AppCompatActivity {
     private CountDownTimer countDownTimer;
     private final long totalTimeInMillis = 30000; // 30 seconds
     private DrawerLayout layoutPlay;
-    private LinearLayout layoutPlayMain, layoutAnswers, layoutLifelines;
+    private LinearLayout layoutPlayMain, layoutAnswers, layoutLifelines, layoutAds;
     private RelativeLayout layoutCountDown, layoutQuestion;
     private TextView tvPrize, tvQuestion, tvPlayQuestionNumber1, tvPlayQuestionNumber2, tvPlayQuestionNumber3,
             tvPlayQuestionNumber4, tvPlayQuestionNumber5, tvPlayQuestionNumber6, tvPlayQuestionNumber7,
             tvPlayQuestionNumber8, tvPlayQuestionNumber9, tvPlayQuestionNumber10, tvPlayQuestionNumber11,
             tvPlayQuestionNumber12, tvPlayQuestionNumber13, tvPlayQuestionNumber14, tvPlayQuestionNumber15;
     private AppCompatButton btnReady, btnQuestionNumber, btnAnswerA, btnAnswerB, btnAnswerC, btnAnswerD, btn5050;
-    private ImageButton btnAskAudience, btnCall, btnChangeQuestion;
+    private ImageButton btnAskAudience, btnCall, btnAskThreeAudience;
+    private InterstitialAd mInterstitialAd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +97,7 @@ public class PlayActivity extends AppCompatActivity {
         layoutQuestion = findViewById(R.id.layout_question);
         layoutAnswers = findViewById(R.id.layout_answers);
         layoutLifelines = findViewById(R.id.layout_lifelines);
+        layoutAds = findViewById(R.id.layout_ads);
         tvCountdown = findViewById(R.id.tv_countdown);
         imgCountdown = findViewById(R.id.img_countdown);
         tvPrize = findViewById(R.id.tv_play_prize);
@@ -95,7 +111,7 @@ public class PlayActivity extends AppCompatActivity {
         btn5050 = findViewById(R.id.btn_5050);
         btnAskAudience = findViewById(R.id.btn_ask_audience);
         btnCall = findViewById(R.id.btn_call);
-        btnChangeQuestion = findViewById(R.id.btn_change_question);
+        btnAskThreeAudience = findViewById(R.id.btn_ask_three_audience);
         tvPlayQuestionNumber1 = findViewById(R.id.tv_play_question_number_1);
         tvPlayQuestionNumber2 = findViewById(R.id.tv_play_question_number_2);
         tvPlayQuestionNumber3 = findViewById(R.id.tv_play_question_number_3);
@@ -167,6 +183,12 @@ public class PlayActivity extends AppCompatActivity {
         answerWrongSounds.add(R.raw.lose_b);
         answerWrongSounds.add(R.raw.lose_c);
         answerWrongSounds.add(R.raw.lose_d);
+
+        helpAnswerSounds = new ArrayList<>();
+        helpAnswerSounds.add(R.raw.answer_help_a);
+        helpAnswerSounds.add(R.raw.answer_help_b);
+        helpAnswerSounds.add(R.raw.answer_help_c);
+        helpAnswerSounds.add(R.raw.answer_help_d);
 
         //Thêm button vào array list để tiện sử dụng
         answerButtons = new ArrayList<>();
@@ -242,7 +264,7 @@ public class PlayActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 //Load câu hỏi đầu tiên sau khi đủ thời gian trễ
-                                question = new Question(database.getQuestionByQN(1));
+                                question = new Question(database.getQuestionByQN(5));
                                 loadQuestion(question);
                             }
                         }, 1000);
@@ -455,20 +477,7 @@ public class PlayActivity extends AppCompatActivity {
                             public void onCompletion(MediaPlayer mp) {
                                 soundManager.removeOnCompletionListener();
                                 //Phát âm thanh trả lời của người thân
-                                switch (question.getCorrectAnswer()) {
-                                    case 1:
-                                        soundManager.playSound(R.raw.answer_help_a);
-                                        break;
-                                    case 2:
-                                        soundManager.playSound(R.raw.answer_help_b);
-                                        break;
-                                    case 3:
-                                        soundManager.playSound(R.raw.answer_help_c);
-                                        break;
-                                    case 4:
-                                        soundManager.playSound(R.raw.answer_help_d);
-                                        break;
-                                }
+                                soundManager.playSound(helpAnswerSounds.get(question.getCorrectAnswer() - 1));
                                 //Hiển thị dialog gọi điện thoại cho người thân
                                 FullScreenDialog callDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_call);
                                 callDialog.setCancelable(false);
@@ -501,6 +510,134 @@ public class PlayActivity extends AppCompatActivity {
                 });
             }
         });
+        //Bắt sự kiện khi bấm dùng trợ giúp tổ tư vấn tại chỗ
+        btnAskThreeAudience.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Dừng đồng hồ đếm ngược
+                if(countDownTimer != null) {
+                    countDownTimer.cancel();
+                }
+                //Thay đổi background của trợ giúp khi đã được dùng
+                btnAskThreeAudience.setBackgroundResource(R.drawable.button_round_2);
+                //Phát âm thanh chọn trợ giúp
+                soundManager.playSound(R.raw.mc_select_ask_audience);
+                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        soundManager.removeOnCompletionListener();
+                        //Phát âm thanh hỏi khán giả
+                        soundManager.playSound(R.raw.mc_ask_three_audience);
+                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                soundManager.removeOnCompletionListener();
+                                //Tạo một mảng chứa các đáp án random
+                                ArrayList<Integer> randomAnswers = new ArrayList<>();
+                                //Random đáp án với tỉ lệ chọn đáp án đúng là 60% + 1/4
+                                Random random = new Random();
+                                for (int i = 0; i < 3; i++) {
+                                    // Tạo số ngẫu nhiên từ 0 đến 1
+                                    double randomNumber = random.nextDouble();
+                                    // Nếu số ngẫu nhiên nhỏ hơn 0.6, trả ra đáp án đúng
+                                    if (randomNumber < 0.6) {
+                                        randomAnswers.add(question.getCorrectAnswer());
+                                    }
+                                    // Nếu không trả ra đáp án ngẫu nhiên
+                                    else {
+                                        randomAnswers.add(random.nextInt(4) + 1); //1, 2, 3, 4
+                                    }
+                                }
+                                //Hiển thị dialog tổ tư vấn tại chỗ
+                                FullScreenDialog askThreeAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_three_audience);
+                                askThreeAudienceDialog.setCancelable(false);
+                                askThreeAudienceDialog.show();
+                                //Hiện thị đáp án của tổ tư vấn
+                                TextView tvAnswer1 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_1);
+                                TextView tvAnswer2 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_2);
+                                TextView tvAnswer3 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_3);
+                                //Lần lượt phát và hiển thị 3 đáp án được chọn
+                                tvAnswer1.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(0)));
+                                soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(0) - 1));
+                                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        soundManager.removeOnCompletionListener();
+                                        soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(1) - 1));
+                                        tvAnswer2.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(1)));
+                                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                soundManager.removeOnCompletionListener();
+                                                soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(2) - 1));
+                                                tvAnswer3.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(2)));
+                                            }
+                                        });
+                                    }
+                                });
+                                //Khi bấm nút trở về thì đóng dialog
+                                AppCompatButton btnReturn = askThreeAudienceDialog.findViewById(R.id.btn_ask_three_audience_return);
+                                btnReturn.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        //Tiếp tục đếm ngược
+                                        countDownTimer.start();
+                                        //Thoát dialog
+                                        askThreeAudienceDialog.dismiss();
+                                        hideNavigationBar();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                });
+            }
+        });
+
+        //Khởi tạo đối tượng mobile ads để tạo quảng cáo
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+
+            }
+        });
+        //Khởi tạo banner quảng cáo góc dưới màn hình
+        loadBannerAds();
+    }
+
+    private AdSize getAdSize() {
+        // Determine the screen width (less decorations) to use for the ad width.
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        display.getMetrics(outMetrics);
+
+        float density = outMetrics.density;
+
+        float adWidthPixels = layoutAds.getWidth();
+
+        // If the ad hasn't been laid out, default to the full screen width.
+        if (adWidthPixels == 0) {
+            adWidthPixels = outMetrics.widthPixels;
+        }
+
+        int adWidth = (int) (adWidthPixels / density);
+        return AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(this, adWidth);
+    }
+
+    private void loadBannerAds() {
+
+        // Create a new ad view.
+        AdView adView = new AdView(this);
+        adView.setAdSize(getAdSize());
+        adView.setAdUnitId("ca-app-pub-3940256099942544/9214589741");
+
+        // Replace ad container with new ad view.
+        layoutAds.removeAllViews();
+        layoutAds.addView(adView);
+
+        // Start loading the ad in the background.
+        AdRequest adRequest = new AdRequest.Builder().build();
+        adView.loadAd(adRequest);
     }
 
     private void openQuestionNumber() {
@@ -522,7 +659,7 @@ public class PlayActivity extends AppCompatActivity {
         btn5050.setVisibility(View.GONE);
         btnAskAudience.setVisibility(View.GONE);
         btnCall.setVisibility(View.GONE);
-        btnChangeQuestion.setVisibility(View.GONE);
+        btnAskThreeAudience.setVisibility(View.GONE);
         //Ẩn backgound của layout trợ giúp
         layoutLifelines.setBackground(null);
         // Tạo một Handler để định thời gian trễ
@@ -692,7 +829,6 @@ public class PlayActivity extends AppCompatActivity {
     private int getRawId(String fileName) {
         return getResources().getIdentifier(fileName, "raw", getPackageName());
     }
-
     //Hàm load câu hỏi
     private void loadQuestion(Question question) {
         hideNavigationBar();
@@ -742,6 +878,8 @@ public class PlayActivity extends AppCompatActivity {
                     public void run() {
                         // Hiển thị câu trả lời sau khi đủ thời gian trễ
                         btnAnswerD.setText("D: " + question.getAnswer4());
+                        //Cho phép trả lời sau khi hiện dủ 4 đáp án
+                        enableAllButtons();
                     }
                 }, 3000);
                 //Đọc nội dung câu hỏi
@@ -752,7 +890,6 @@ public class PlayActivity extends AppCompatActivity {
                         soundManager.removeOnCompletionListener();
                         //Bắt đầu đếm giờ
                         startCountdown();
-                        enableAllButtons();
                     }
                 });
             }
@@ -803,13 +940,58 @@ public class PlayActivity extends AppCompatActivity {
                                 @Override
                                 public void onCompletion(MediaPlayer mp) {
                                     soundManager.removeOnCompletionListener();
-                                    //Kích hoạt các button trở lại
-                                    enableAllButtons();
-                                    //Bỏ highlight đáp án được chọn
-                                    answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
-                                    //Load câu hỏi tiếp theo
-                                    question = database.getQuestionByQN(question.getQuestionNumber() + 1);
-                                    loadQuestion(question);
+                                    //Nếu đến câu hỏi số 6 thì phát âm thanh chúc mừng và hiển thị trợ giúp tổ tư vấn tại chỗ
+                                    if (question.getQuestionNumber() + 1 == 6) {
+                                        //Phát âm thanh chúc mừng
+                                        soundManager.playSound(R.raw.mc_congrats_stage1);
+                                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                //Hiển thị trợ giúp tổ tư vấn tại chỗ
+                                                btnAskThreeAudience.setVisibility(View.VISIBLE);
+                                            }
+                                        }, 6000);
+                                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                soundManager.removeOnCompletionListener();
+                                                //Kích hoạt các button trở lại
+                                                enableAllButtons();
+                                                //Bỏ highlight đáp án được chọn
+                                                answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
+                                                //Load câu hỏi tiếp theo
+                                                question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+                                                loadQuestion(question);
+                                            }
+                                        });
+                                    }
+                                    //Nếu đến câu hỏi số 11 thì phát âm thanh chúc mừng
+                                    else if (question.getQuestionNumber() + 1 == 11) {
+                                        //Phát âm thanh chúc mừng
+                                        soundManager.playSound(R.raw.mc_congrats_stage2);
+                                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                            @Override
+                                            public void onCompletion(MediaPlayer mp) {
+                                                soundManager.removeOnCompletionListener();
+                                                //Kích hoạt các button trở lại
+                                                enableAllButtons();
+                                                //Bỏ highlight đáp án được chọn
+                                                answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
+                                                //Load câu hỏi tiếp theo
+                                                question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+                                                loadQuestion(question);
+                                            }
+                                        });
+                                    }
+                                    else  {
+                                        //Kích hoạt các button trở lại
+                                        enableAllButtons();
+                                        //Bỏ highlight đáp án được chọn
+                                        answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.button_selector);
+                                        //Load câu hỏi tiếp theo
+                                        question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+                                        loadQuestion(question);
+                                    }
                                 }
                             });
                         }
@@ -831,7 +1013,6 @@ public class PlayActivity extends AppCompatActivity {
             }
         });
     }
-
     //Hàm vô hiệu hóa các nút trên màn hình
     private void disableAllButtons() {
 //        btnReady.setEnabled(false);
@@ -843,7 +1024,7 @@ public class PlayActivity extends AppCompatActivity {
         btn5050.setEnabled(false);
         btnAskAudience.setEnabled(false);
         btnCall.setEnabled(false);
-        btnChangeQuestion.setEnabled(false);
+        btnAskThreeAudience.setEnabled(false);
     }
     //Hàm kích hoạt các nút trên màn hình
     private void enableAllButtons() {
@@ -856,7 +1037,7 @@ public class PlayActivity extends AppCompatActivity {
         btn5050.setEnabled(true);
         btnAskAudience.setEnabled(true);
         btnCall.setEnabled(true);
-        btnChangeQuestion.setEnabled(true);
+        btnAskThreeAudience.setEnabled(true);
     }
     //Hàm hiển thị dialog kết thúc trò chơi
     private void showGameOverDialog() {

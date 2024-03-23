@@ -1,11 +1,16 @@
 package studies.foxie.ailatrieuphu;
 
+import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.media.MediaPlayer;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -16,9 +21,20 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.OnUserEarnedRewardListener;
+import com.google.android.gms.ads.initialization.InitializationStatus;
+import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
+import com.google.android.gms.ads.rewarded.RewardItem;
+import com.google.android.gms.ads.rewarded.RewardedAd;
+import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+
 public class MainActivity extends AppCompatActivity {
     private SoundManager backgroundSoundManager, soundEffectManager;
-    AppCompatButton btnStartGame;
+    private AppCompatButton btnStartGame, btnQC;
+    private RewardedAd rewardedAd;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -32,6 +48,13 @@ public class MainActivity extends AppCompatActivity {
         int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         decorView.setSystemUiVisibility(uiOptions);
         setContentView(R.layout.activity_main);
+        //Test QC Video co thuong
+        MobileAds.initialize(this, new OnInitializationCompleteListener() {
+            @Override
+            public void onInitializationComplete(InitializationStatus initializationStatus) {
+            }
+        });
+
         // Ánh xạ các thành phần trong layout
         ImageView imageView = findViewById(R.id.iv_main_light_effect);
         btnStartGame = findViewById(R.id.btn_main_start_game);
@@ -39,33 +62,70 @@ public class MainActivity extends AppCompatActivity {
         backgroundSoundManager = new SoundManager(MainActivity.this);
         soundEffectManager = new SoundManager(MainActivity.this);
 
-        //Chạy animation của hiệu ứng phát sáng
-        Animation animation = AnimationUtils.loadAnimation(this, R.anim.growing_light);
-        imageView.startAnimation(animation);
-        //Phát âm thanh nền trong menu
-        backgroundSoundManager.playSound(R.raw.mc_wellcome);
-        backgroundSoundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                backgroundSoundManager.playSoundLoop(R.raw.bg_music_menu);
-
-            }
-        });
-        //Bắt sự kiện khi ấn nút "bắt đầu"
-        btnStartGame.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                soundEffectManager.playSound(R.raw.bg_select_ans);
-                soundEffectManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundEffectManager.removeOnCompletionListener();
-                        Intent intent = new Intent(MainActivity.this, PlayActivity.class);
-                        startActivity(intent);
-                    }
-                });
-            }
-        });
+//        //Chạy animation của hiệu ứng phát sáng
+//        Animation animation = AnimationUtils.loadAnimation(this, R.anim.growing_light);
+//        imageView.startAnimation(animation);
+//        //Phát âm thanh nền trong menu
+//        backgroundSoundManager.playSound(R.raw.mc_wellcome);
+//        backgroundSoundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//            @Override
+//            public void onCompletion(MediaPlayer mp) {
+//                backgroundSoundManager.playSoundLoop(R.raw.bg_music_menu);
+//            }
+//        });
+//        //Bắt sự kiện khi ấn nút "bắt đầu"
+//        btnStartGame.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                soundEffectManager.playSound(R.raw.bg_select_ans);
+//                soundEffectManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+//                    @Override
+//                    public void onCompletion(MediaPlayer mp) {
+//                        soundEffectManager.removeOnCompletionListener();
+//                        Intent intent = new Intent(MainActivity.this, PlayActivity.class);
+//                        startActivity(intent);
+//                    }
+//                });
+//            }
+//        });
+//
+//        btnQC = findViewById(R.id.btn_main_store);
+//
+//        AdRequest adRequest = new AdRequest.Builder().build();
+//        RewardedAd.load(this, "ca-app-pub-3940256099942544/5224354917",
+//                adRequest, new RewardedAdLoadCallback() {
+//                    @Override
+//                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+//                        // Handle the error.
+//                        Log.d(TAG, loadAdError.toString());
+//                        rewardedAd = null;
+//                    }
+//
+//                    @Override
+//                    public void onAdLoaded(@NonNull RewardedAd ad) {
+//                        rewardedAd = ad;
+//                        Log.d(TAG, "Ad was loaded.");
+//                    }
+//                });
+//        btnQC.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if (rewardedAd != null) {
+//                    Activity activityContext = MainActivity.this;
+//                    rewardedAd.show(activityContext, new OnUserEarnedRewardListener() {
+//                        @Override
+//                        public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
+//                            // Handle the reward.
+//                            Log.d(TAG, "The user earned the reward.");
+//                            int rewardAmount = rewardItem.getAmount();
+//                            String rewardType = rewardItem.getType();
+//                        }
+//                    });
+//                } else {
+//                    Log.d(TAG, "The rewarded ad wasn't ready yet.");
+//                }
+//            }
+//        });
     }
     @Override
     protected void onDestroy() {

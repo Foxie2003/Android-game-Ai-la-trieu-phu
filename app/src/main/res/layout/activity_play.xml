@@ -299,7 +299,7 @@
                 android:src="@drawable/baseline_call_24"
                 android:background="@drawable/button_round_1"/>
             <ImageButton
-                android:id="@+id/btn_change_question"
+                android:id="@+id/btn_ask_three_audience"
                 android:layout_weight="1"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
@@ -307,20 +307,16 @@
                 android:layout_margin="10dp"
                 android:scaleType="fitCenter"
                 android:layout_gravity="center_vertical"
-                android:src="@drawable/baseline_autorenew_24"
+                android:src="@drawable/baseline_psychology_alt_24"
                 android:background="@drawable/button_round_1"/>
         </LinearLayout>
         <LinearLayout
             android:id="@+id/layout_ads"
+            android:background="@color/white"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:orientation="horizontal"
-            android:layout_weight="6"
-            android:background="@color/white">
-            <TextView
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:text="QUẢNG CÁO"/>
+            android:layout_weight="7">
         </LinearLayout>
     </LinearLayout>
     <LinearLayout

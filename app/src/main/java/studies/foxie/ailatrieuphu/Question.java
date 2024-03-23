@@ -111,7 +111,20 @@ public class Question {
                 return "";
         }
     }
-
+    public String getCorrectAnswerString(int answer) {
+        switch (answer) {
+            case (1):
+                return "A";
+            case (2):
+                return "B";
+            case (3):
+                return "C";
+            case (4):
+                return "D";
+            default:
+                return "";
+        }
+    }
     public void setCorrectAnswer(int correctAnswer) {
         this.correctAnswer = correctAnswer;
     }
