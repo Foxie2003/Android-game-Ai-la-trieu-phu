@@ -27,7 +27,7 @@ public class GradientTextView extends androidx.appcompat.widget.AppCompatTextVie
         Paint paint = getPaint();
         // Tạo một gradient theo chiều ngang
         @SuppressLint("DrawAllocation") Shader shader = new LinearGradient(0, 0, 0, getHeight(),
-                new int[]{0xFFffffff, 0xFF81a6d0},
+                new int[]{0xFF2dfdf9, 0xFFffffff, 0xFFfd18d6},
                 null, Shader.TileMode.CLAMP);
         paint.setShader(shader);
 

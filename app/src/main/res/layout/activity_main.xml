@@ -1,12 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@drawable/n_bg"
     tools:context=".MainActivity"
+    android:background="@drawable/n_bg"
     android:weightSum="100">
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,24 +20,23 @@
             android:layout_marginRight="30dp"
             android:layout_marginBottom="-80dp"
             android:src="@drawable/n_logo" />
-
         <ImageView
-            android:id="@+id/img_main_avatar"
+            android:id="@+id/iv_main_avatar"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:padding="2dp"
             android:layout_alignParentStart="true"
             android:layout_marginStart="10dp"
             android:layout_marginTop="10dp"
-            android:src="@drawable/avatar_0"
+            android:src="@drawable/foxie"
             android:background="@drawable/avatar_frame_0" />
         <TextView
             android:id="@+id/tv_main_player_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-            android:layout_alignTop="@+id/img_main_avatar"
-            android:layout_toEndOf="@+id/img_main_avatar"
+            android:layout_alignTop="@+id/iv_main_avatar"
+            android:layout_toEndOf="@+id/iv_main_avatar"
             android:text="FoxieNguyen2003"
             android:textSize="18sp"
             android:textColor="@color/white"
@@ -69,6 +67,7 @@
                 android:layout_height="30dp"
                 android:src="@drawable/money"/>
             <TextView
+                android:id="@+id/tv_main_money"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="5dp"
@@ -126,6 +125,7 @@
         android:orientation="vertical"
         android:weightSum="100">
         <ImageButton
+            android:id="@+id/ibtn_main_play"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="20"

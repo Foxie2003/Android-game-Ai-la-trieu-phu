@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "711718485134",
+    "firebase_url": "https://ailatrieuphu-18e27-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "ailatrieuphu-18e27",
+    "storage_bucket": "ailatrieuphu-18e27.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:711718485134:android:a0fedaf8a4d6935b505ddf",
+        "android_client_info": {
+          "package_name": "studies.foxie.ailatrieuphu"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "711718485134-vi2lcs4hjkm2a23kv1u14tstafplu0pq.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "studies.foxie.ailatrieuphu",
+            "certificate_hash": "2e6be0967d1a2cc1a5926514e326af66cd837d4b"
+          }
+        },
+        {
+          "client_id": "711718485134-v9ar981u99noh6esc73rkutqqokkhm7d.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBWReOLKrFdZ_PO2oCd3k87Y8wWgpTSjlY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "711718485134-v9ar981u99noh6esc73rkutqqokkhm7d.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
