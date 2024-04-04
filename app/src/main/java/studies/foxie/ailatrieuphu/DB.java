@@ -18,7 +18,7 @@ public class DB {
         Cursor playerInfoCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerInfo'");
         if (playerInfoCursor == null || playerInfoCursor.getCount() <= 0) {
             db.QueryData("CREATE TABLE IF NOT EXISTS PlayerInfo (Money Integer, Diamond Integer)");
-            db.QueryData("INSERT INTO PlayerInfo VALUES (0, 0)");
+            db.QueryData("INSERT INTO PlayerInfo VALUES (0, 100)");
         }
         //Tạo bảng Questions nếu nó chưa tồn tại
         Cursor QuestionsCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='Questions'");
@@ -192,6 +192,31 @@ public class DB {
     //Hàm cộng tiền cho người chơi khi hoàn thành lượt chơi
     public void addMoney(int money) {
         setMoney(getMoney() + money);
+    }
+    public long getDiamond() {
+        //Lấy bản ghi đầu tiên của cột Diamond trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT Diamond FROM PlayerInfo LIMIT 1");
+        long diamond = 0;
+        if (data != null && data.moveToFirst()) {
+            diamond = data.getInt(0);
+        }
+        return diamond;
+    }
+    public void setDiamond(long diamond) {
+        db.QueryData("UPDATE PlayerInfo SET Diamond = " + diamond);
+    }
+    //Hàm trừ kim cương của người chơi khi mua trợ giúp
+    public boolean minusDiamond(int diamond) {
+        //Kiểm tra xem số kim cương của người chơi có lớn hơn hoặc bằng số kim cương bị trừ không
+        //Nếu lớn hơn hoặc bằng thì thực hiện trừ kim cương
+        if (getDiamond() >= diamond) {
+            setDiamond(getDiamond() - diamond);
+            return true;
+        }
+        //Nếu không thì hủy bỏ việc trừ kim cương
+        else {
+            return false;
+        }
     }
     public Question getQuestionByQN(int questionNumber) {
         //Lấy bản ghi ngẫu nhiên trong bảng Question với questionNumber

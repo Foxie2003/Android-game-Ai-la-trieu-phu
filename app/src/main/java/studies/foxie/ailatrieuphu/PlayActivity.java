@@ -302,50 +302,12 @@ public class PlayActivity extends AppCompatActivity {
         iv5050.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Thay đổi background của trợ giúp khi đã được dùng
-                iv5050.setBackgroundResource(R.drawable.button_round_2);
-                //Phát âm thanh chọn trợ giúp 50 50
-                soundManager.playSound(R.raw.mc_select_50_50);
-                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundManager.removeOnCompletionListener();
-                        //Phát âm thanh bỏ đi 2 phương án sai
-                        soundManager.playSound(R.raw.mc_50_50);
-                        // Tạo một Handler để định thời gian trễ
-                        new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                for (int i = 0; i < 2;) {
-                                    // Khởi tạo một đối tượng của lớp Random
-                                    Random random = new Random();
-                                    // Đặt giá trị tối thiểu và tối đa
-                                    int max = 4;
-                                    int min = 1;
-                                    // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
-                                    int randomNumber = random.nextInt(max - min + 1) + min;
-                                    //Nếu random ra đáp án sai
-                                    if(randomNumber != question.getCorrectAnswer()) {
-                                        AppCompatButton answerButton = answerButtons.get(randomNumber - 1);
-                                        //Nếu đáp án đó chưa được loại bỏ
-                                        if (answerButton.isEnabled()) {
-                                            //Loại bỏ đáp án
-                                            answerButton.setText(null);
-                                            answerButton.setEnabled(false);
-                                            i++;
-                                        }
-                                    }
-                                }
-                            }
-                        }, 2900);
-                    }
-                });
+                lifeLine5050();
                 //Đặt lại sự kiện khi click vào trợ giúp
                 iv5050.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        //TODO: Xử lý dùng trợ giúp bằng kim cương
-                        Toast.makeText(PlayActivity.this, "Bạn đã dùng trợ giúp này rồi", Toast.LENGTH_SHORT).show();
+                        showBuyLifeLineDialog(R.id.iv_play_5050);
                     }
                 });
             }
@@ -354,97 +316,12 @@ public class PlayActivity extends AppCompatActivity {
         ivAskAudience.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Dừng đồng hồ đếm ngược
-                if(countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
-                //Thay đổi background của trợ giúp khi đã được dùng
-                ivAskAudience.setBackgroundResource(R.drawable.button_round_2);
-                //Phát âm thanh chọn trợ giúp
-                soundManager.playSound(R.raw.mc_select_ask_audience);
-                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundManager.removeOnCompletionListener();
-                        //Phát âm thanh nền của trợ giúp
-                        soundManager.playSound(R.raw.bg_ask_audience);
-                        //Random % đáp án sai
-                        ArrayList<Integer> percents = new ArrayList<>();
-                        int correctPercent = 100;
-                        // Khởi tạo một đối tượng của lớp Random
-                        Random random = new Random();
-                        for (int i = 0; i < 3; i++) {
-                            // Tạo số nguyên ngẫu nhiên trong khoảng từ 0 đến 20
-                            int randomNumber = random.nextInt(20 + 1);
-                            percents.add(randomNumber);
-                            correctPercent -= randomNumber;
-                        }
-                        percents.add(correctPercent);
-                        //Sắp xếp các % vào trong mảng theo từng đáp án
-                        if(question.getCorrectAnswer() != 4) {
-                            int tmp = percents.get(question.getCorrectAnswer() - 1);
-                            percents.set(question.getCorrectAnswer() - 1, percents.get(3));
-                            percents.set(3, tmp);
-                        }
-                        //Hiển thị dialog hỏi ý kiến khán giả trong trường quay
-                        FullScreenDialog askAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_audience);
-                        askAudienceDialog.setCancelable(false);
-                        askAudienceDialog.show();
-                        //Khởi tạo mảng chứa các view để tiện sử dụng
-                        ArrayList<View> columns = new ArrayList<>();
-                        columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column1));
-                        columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column2));
-                        columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column3));
-                        columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column4));
-                        ArrayList<TextView> textviews = new ArrayList<>();
-                        textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column1));
-                        textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column2));
-                        textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column3));
-                        textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column4));
-                        for (int i = 0; i < 4; i++) {
-                            // Lấy LayoutParams hiện tại của view
-                            //Vì view ở trong linear layout nên phải dùng "LinearLayout.LayoutParams"
-                            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) columns.get(i).getLayoutParams();
-                            // Thay đổi chiều cao của LayoutParams
-                            layoutParams.height = (percents.get(i) * 5); // Chiều cao mới * 5 cho cao đẹp hơn
-                            // Cập nhật LayoutParams mới cho view
-                            columns.get(i).setLayoutParams(layoutParams);
-                            //Set phần trăm cho text view
-                            textviews.get(i).setText(percents.get(i) + "%");
-                            textviews.get(i).setVisibility(View.INVISIBLE);
-                            //Tạo animation hiển thị cho các các cột
-                            Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.growing);
-                            //Sử dụng animation cho các các cột
-                            columns.get(i).startAnimation(animation);
-                        }
-                        //Hiển thị các text view khi đủ thời gian
-                        textviews.forEach(textView -> {
-                            new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    textView.setVisibility(View.VISIBLE);
-                                }
-                            }, 4800);
-                        });
-                        //Khi bấm nút trở về thì đóng dialog
-                        AppCompatButton btnReturn = askAudienceDialog.findViewById(R.id.btn_ask_audience_return);
-                        btnReturn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                //Tiếp tục đếm ngược
-                                countDownTimer.start();
-                                //Thoát dialog
-                                askAudienceDialog.dismiss();
-                                hideNavigationBar();
-                            }
-                        });
-                    }
-                });
+                lifeLineAskAudience();
                 //Đặt lại sự kiện khi click vào trợ giúp hỏi ý kiến khản giả
                 ivAskAudience.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(PlayActivity.this, "Bạn đã dùng trợ giúp này rồi", Toast.LENGTH_SHORT).show();
+                        showBuyLifeLineDialog(R.id.iv_play_ask_audience);
                     }
                 });
             }
@@ -453,54 +330,12 @@ public class PlayActivity extends AppCompatActivity {
         ivCall.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Dừng đồng hồ đếm ngược
-                if(countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
-                //Thay đổi background của trợ giúp khi đã được dùng
-                ivCall.setBackgroundResource(R.drawable.button_round_2);
-                //Phát âm thanh chọn trợ giúp
-                soundManager.playSound(R.raw.mc_call);
-                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundManager.removeOnCompletionListener();
-                        //Phát âm thanh kết nối điện thoại
-                        soundManager.playSound(R.raw.mc_conect_call);
-                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                soundManager.removeOnCompletionListener();
-                                //Phát âm thanh trả lời của người thân
-                                soundManager.playSound(helpAnswerSounds.get(question.getCorrectAnswer() - 1));
-                                //Hiển thị dialog gọi điện thoại cho người thân
-                                FullScreenDialog callDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_call);
-                                callDialog.setCancelable(false);
-                                callDialog.show();
-                                //Hiện thị đáp án của người thân
-                                TextView tvAnswer = callDialog.findViewById(R.id.tv_call_answer);
-                                tvAnswer.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString());
-                                //Khi bấm nút trở về thì đóng dialog
-                                AppCompatButton btnReturn = callDialog.findViewById(R.id.btn_call_return);
-                                btnReturn.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        //Tiếp tục đếm ngược
-                                        countDownTimer.start();
-                                        //Thoát dialog
-                                        callDialog.dismiss();
-                                        hideNavigationBar();
-                                    }
-                                });
-                            }
-                        });
-                    }
-                });
+                lifeLineCall();
                 //Đặt lại sự kiện khi click vào trợ giúp
                 ivCall.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Toast.makeText(PlayActivity.this, "Bạn đã dùng trợ giúp này rồi", Toast.LENGTH_SHORT).show();
+                        showBuyLifeLineDialog(R.id.iv_play_call);
                     }
                 });
             }
@@ -509,81 +344,12 @@ public class PlayActivity extends AppCompatActivity {
         ivAskThreeAudience.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //Dừng đồng hồ đếm ngược
-                if(countDownTimer != null) {
-                    countDownTimer.cancel();
-                }
-                //Thay đổi background của trợ giúp khi đã được dùng
-                ivAskThreeAudience.setBackgroundResource(R.drawable.button_round_2);
-                //Phát âm thanh chọn trợ giúp
-                soundManager.playSound(R.raw.mc_select_ask_audience);
-                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                lifeLineAskThreeAudience();
+                //Đặt lại sự kiện khi click vào trợ giúp
+                ivAskThreeAudience.setOnClickListener(new View.OnClickListener() {
                     @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundManager.removeOnCompletionListener();
-                        //Phát âm thanh hỏi khán giả
-                        soundManager.playSound(R.raw.mc_ask_three_audience);
-                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                            @Override
-                            public void onCompletion(MediaPlayer mp) {
-                                soundManager.removeOnCompletionListener();
-                                //Tạo một mảng chứa các đáp án random
-                                ArrayList<Integer> randomAnswers = new ArrayList<>();
-                                //Random đáp án với tỉ lệ chọn đáp án đúng là 60% + 1/4
-                                Random random = new Random();
-                                for (int i = 0; i < 3; i++) {
-                                    // Tạo số ngẫu nhiên từ 0 đến 1
-                                    double randomNumber = random.nextDouble();
-                                    // Nếu số ngẫu nhiên nhỏ hơn 0.6, trả ra đáp án đúng
-                                    if (randomNumber < 0.6) {
-                                        randomAnswers.add(question.getCorrectAnswer());
-                                    }
-                                    // Nếu không trả ra đáp án ngẫu nhiên
-                                    else {
-                                        randomAnswers.add(random.nextInt(4) + 1); //1, 2, 3, 4
-                                    }
-                                }
-                                //Hiển thị dialog tổ tư vấn tại chỗ
-                                FullScreenDialog askThreeAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_three_audience);
-                                askThreeAudienceDialog.setCancelable(false);
-                                askThreeAudienceDialog.show();
-                                //Hiện thị đáp án của tổ tư vấn
-                                TextView tvAnswer1 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_1);
-                                TextView tvAnswer2 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_2);
-                                TextView tvAnswer3 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_3);
-                                //Lần lượt phát và hiển thị 3 đáp án được chọn
-                                tvAnswer1.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(0)));
-                                soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(0) - 1));
-                                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                    @Override
-                                    public void onCompletion(MediaPlayer mp) {
-                                        soundManager.removeOnCompletionListener();
-                                        soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(1) - 1));
-                                        tvAnswer2.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(1)));
-                                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                                            @Override
-                                            public void onCompletion(MediaPlayer mp) {
-                                                soundManager.removeOnCompletionListener();
-                                                soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(2) - 1));
-                                                tvAnswer3.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(2)));
-                                            }
-                                        });
-                                    }
-                                });
-                                //Khi bấm nút trở về thì đóng dialog
-                                AppCompatButton btnReturn = askThreeAudienceDialog.findViewById(R.id.btn_ask_three_audience_return);
-                                btnReturn.setOnClickListener(new View.OnClickListener() {
-                                    @Override
-                                    public void onClick(View v) {
-                                        //Tiếp tục đếm ngược
-                                        countDownTimer.start();
-                                        //Thoát dialog
-                                        askThreeAudienceDialog.dismiss();
-                                        hideNavigationBar();
-                                    }
-                                });
-                            }
-                        });
+                    public void onClick(View v) {
+                        showBuyLifeLineDialog(R.id.iv_play_ask_three_audience);
                     }
                 });
             }
@@ -686,7 +452,7 @@ public class PlayActivity extends AppCompatActivity {
         ivAskAudience.setVisibility(View.GONE);
         ivCall.setVisibility(View.GONE);
         ivAskThreeAudience.setVisibility(View.GONE);
-        //Ẩn backgound của layout trợ giúp
+        //Ẩn background của layout trợ giúp
         layoutLifelines.setBackground(null);
         // Tạo một Handler để định thời gian trễ
         new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
@@ -1069,6 +835,262 @@ public class PlayActivity extends AppCompatActivity {
         ivCall.setEnabled(true);
         ivAskThreeAudience.setEnabled(true);
     }
+    //Hàm xử lý trợ giúp 5050
+    public void lifeLine5050() {
+        //Thay đổi src của trợ giúp khi đã được dùng
+        iv5050.setImageResource(R.drawable.button_5050_used);
+        //Phát âm thanh chọn trợ giúp 50 50
+        soundManager.playSound(R.raw.mc_select_50_50);
+        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                soundManager.removeOnCompletionListener();
+                //Phát âm thanh bỏ đi 2 phương án sai
+                soundManager.playSound(R.raw.mc_50_50);
+                // Tạo một Handler để định thời gian trễ
+                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        for (int i = 0; i < 2;) {
+                            // Khởi tạo một đối tượng của lớp Random
+                            Random random = new Random();
+                            // Đặt giá trị tối thiểu và tối đa
+                            int max = 4;
+                            int min = 1;
+                            // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
+                            int randomNumber = random.nextInt(max - min + 1) + min;
+                            //Nếu random ra đáp án sai
+                            if(randomNumber != question.getCorrectAnswer()) {
+                                AppCompatButton answerButton = answerButtons.get(randomNumber - 1);
+                                //Nếu đáp án đó chưa được loại bỏ
+                                if (answerButton.isEnabled()) {
+                                    //Loại bỏ đáp án
+                                    answerButton.setText(null);
+                                    answerButton.setEnabled(false);
+                                    i++;
+                                }
+                            }
+                        }
+                    }
+                }, 2900);
+            }
+        });
+    }
+    //Hàm xử lý trợ giúp hỏi ý kiến khán giả
+    public void lifeLineAskAudience() {
+        //Dừng đồng hồ đếm ngược
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        //Thay đổi src của trợ giúp khi đã được dùng
+        ivAskAudience.setImageResource(R.drawable.button_ask_audience_used);
+        //Phát âm thanh chọn trợ giúp
+        soundManager.playSound(R.raw.mc_select_ask_audience);
+        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                soundManager.removeOnCompletionListener();
+                //Phát âm thanh nền của trợ giúp
+                soundManager.playSound(R.raw.bg_ask_audience);
+                //Random % đáp án sai
+                ArrayList<Integer> percents = new ArrayList<>();
+                int correctPercent = 100;
+                // Khởi tạo một đối tượng của lớp Random
+                Random random = new Random();
+                for (int i = 0; i < 3; i++) {
+                    // Tạo số nguyên ngẫu nhiên trong khoảng từ 0 đến 20
+                    int randomNumber = random.nextInt(20 + 1);
+                    percents.add(randomNumber);
+                    correctPercent -= randomNumber;
+                }
+                percents.add(correctPercent);
+                //Sắp xếp các % vào trong mảng theo từng đáp án
+                if(question.getCorrectAnswer() != 4) {
+                    int tmp = percents.get(question.getCorrectAnswer() - 1);
+                    percents.set(question.getCorrectAnswer() - 1, percents.get(3));
+                    percents.set(3, tmp);
+                }
+                //Hiển thị dialog hỏi ý kiến khán giả trong trường quay
+                FullScreenDialog askAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_audience);
+                askAudienceDialog.setCancelable(false);
+                askAudienceDialog.show();
+                //Khởi tạo mảng chứa các view để tiện sử dụng
+                ArrayList<View> columns = new ArrayList<>();
+                columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column1));
+                columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column2));
+                columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column3));
+                columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column4));
+                ArrayList<TextView> textviews = new ArrayList<>();
+                textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column1));
+                textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column2));
+                textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column3));
+                textviews.add(askAudienceDialog.findViewById(R.id.tv_ask_audience_column4));
+                for (int i = 0; i < 4; i++) {
+                    // Lấy LayoutParams hiện tại của view
+                    //Vì view ở trong linear layout nên phải dùng "LinearLayout.LayoutParams"
+                    RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) columns.get(i).getLayoutParams();
+                    // Thay đổi chiều cao của LayoutParams
+                    layoutParams.height = (percents.get(i) * 5); // Chiều cao mới * 5 cho cao đẹp hơn
+                    // Cập nhật LayoutParams mới cho view
+                    columns.get(i).setLayoutParams(layoutParams);
+                    //Set phần trăm cho text view
+                    textviews.get(i).setText(percents.get(i) + "%");
+                    textviews.get(i).setVisibility(View.INVISIBLE);
+                    //Tạo animation hiển thị cho các các cột
+                    Animation animation = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.growing);
+                    //Sử dụng animation cho các các cột
+                    columns.get(i).startAnimation(animation);
+                }
+                //Hiển thị các text view khi đủ thời gian
+                textviews.forEach(textView -> {
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            textView.setVisibility(View.VISIBLE);
+                        }
+                    }, 4800);
+                });
+                //Khi bấm nút trở về thì đóng dialog
+                AppCompatButton btnReturn = askAudienceDialog.findViewById(R.id.btn_ask_audience_return);
+                btnReturn.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //Tiếp tục đếm ngược
+                        countDownTimer.start();
+                        //Thoát dialog
+                        askAudienceDialog.dismiss();
+                        hideNavigationBar();
+                    }
+                });
+            }
+        });
+    }
+    //Hàm xử lý trợ giúp gọi điện thoại cho người thân
+    public void lifeLineCall() {
+        //Dừng đồng hồ đếm ngược
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        //Thay đổi src của trợ giúp khi đã được dùng
+        ivCall.setImageResource(R.drawable.button_call_used);
+        //Phát âm thanh chọn trợ giúp
+        soundManager.playSound(R.raw.mc_call);
+        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                soundManager.removeOnCompletionListener();
+                //Phát âm thanh kết nối điện thoại
+                soundManager.playSound(R.raw.mc_conect_call);
+                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        soundManager.removeOnCompletionListener();
+                        //Phát âm thanh trả lời của người thân
+                        soundManager.playSound(helpAnswerSounds.get(question.getCorrectAnswer() - 1));
+                        //Hiển thị dialog gọi điện thoại cho người thân
+                        FullScreenDialog callDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_call);
+                        callDialog.setCancelable(false);
+                        callDialog.show();
+                        //Hiện thị đáp án của người thân
+                        TextView tvAnswer = callDialog.findViewById(R.id.tv_call_answer);
+                        tvAnswer.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString());
+                        //Khi bấm nút trở về thì đóng dialog
+                        AppCompatButton btnReturn = callDialog.findViewById(R.id.btn_call_return);
+                        btnReturn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Tiếp tục đếm ngược
+                                countDownTimer.start();
+                                //Thoát dialog
+                                callDialog.dismiss();
+                                hideNavigationBar();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
+    //Hàm xử lý trợ giúp tổ tư vấn tại chỗ
+    public void lifeLineAskThreeAudience() {
+        //Dừng đồng hồ đếm ngược
+        if(countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        //Thay đổi src của trợ giúp khi đã được dùng
+        ivAskThreeAudience.setImageResource(R.drawable.button_ask_three_audience_used);
+        //Phát âm thanh chọn trợ giúp
+        soundManager.playSound(R.raw.mc_select_ask_audience);
+        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                soundManager.removeOnCompletionListener();
+                //Phát âm thanh hỏi khán giả
+                soundManager.playSound(R.raw.mc_ask_three_audience);
+                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        soundManager.removeOnCompletionListener();
+                        //Tạo một mảng chứa các đáp án random
+                        ArrayList<Integer> randomAnswers = new ArrayList<>();
+                        //Random đáp án với tỉ lệ chọn đáp án đúng là 60% + 1/4
+                        Random random = new Random();
+                        for (int i = 0; i < 3; i++) {
+                            // Tạo số ngẫu nhiên từ 0 đến 1
+                            double randomNumber = random.nextDouble();
+                            // Nếu số ngẫu nhiên nhỏ hơn 0.6, trả ra đáp án đúng
+                            if (randomNumber < 0.6) {
+                                randomAnswers.add(question.getCorrectAnswer());
+                            }
+                            // Nếu không trả ra đáp án ngẫu nhiên
+                            else {
+                                randomAnswers.add(random.nextInt(4) + 1); //1, 2, 3, 4
+                            }
+                        }
+                        //Hiển thị dialog tổ tư vấn tại chỗ
+                        FullScreenDialog askThreeAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_three_audience);
+                        askThreeAudienceDialog.setCancelable(false);
+                        askThreeAudienceDialog.show();
+                        //Hiện thị đáp án của tổ tư vấn
+                        TextView tvAnswer1 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_1);
+                        TextView tvAnswer2 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_2);
+                        TextView tvAnswer3 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_3);
+                        //Lần lượt phát và hiển thị 3 đáp án được chọn
+                        tvAnswer1.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(0)));
+                        soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(0) - 1));
+                        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                            @Override
+                            public void onCompletion(MediaPlayer mp) {
+                                soundManager.removeOnCompletionListener();
+                                soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(1) - 1));
+                                tvAnswer2.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(1)));
+                                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                                    @Override
+                                    public void onCompletion(MediaPlayer mp) {
+                                        soundManager.removeOnCompletionListener();
+                                        soundManager.playSound(helpAnswerSounds.get(randomAnswers.get(2) - 1));
+                                        tvAnswer3.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString(randomAnswers.get(2)));
+                                    }
+                                });
+                            }
+                        });
+                        //Khi bấm nút trở về thì đóng dialog
+                        AppCompatButton btnReturn = askThreeAudienceDialog.findViewById(R.id.btn_ask_three_audience_return);
+                        btnReturn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                //Tiếp tục đếm ngược
+                                countDownTimer.start();
+                                //Thoát dialog
+                                askThreeAudienceDialog.dismiss();
+                                hideNavigationBar();
+                            }
+                        });
+                    }
+                });
+            }
+        });
+    }
     //Hàm hiển thị dialog kết thúc trò chơi
     private void showGameOverDialog() {
         //Hiện quảng cáo gián đoạn
@@ -1156,6 +1178,162 @@ public class PlayActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 //TODO: Làm chia sẻ kết quả
+            }
+        });
+    }
+    //Hàm hiển thị dialog mua trợ giúp
+    private void showBuyLifeLineDialog(int lifeLineId) {
+        //Hiển thị dialog mua trợ giúp
+        FullScreenDialog buyLifeLineDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_buy_lifeline);
+        buyLifeLineDialog.setCancelable(false);
+        buyLifeLineDialog.show();
+        TextView tvPrice = buyLifeLineDialog.findViewById(R.id.tv_buy_lifeline_price);
+        AppCompatButton btnClose = buyLifeLineDialog.findViewById(R.id.btn_buy_lifeline_close);
+        AppCompatButton btnBuy = buyLifeLineDialog.findViewById(R.id.btn_buy_lifeline_buy);
+        //Xác định người dùng đang muốn mua trợ giúp nào
+        int price = 0;
+        if (lifeLineId == R.id.iv_play_5050) {
+            price = 50;
+            int finalPrice = price;
+            btnBuy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Trừ kim cương của người chơi
+                    //Nếu trừ thành công thì cho người dùng tiếp tục sử dụng trợ giúp
+                    if(database.minusDiamond(finalPrice)) {
+                        //Thay đổi src của trợ giúp có thể được dùng
+                        iv5050.setImageResource(R.drawable.button_5050);
+                        //Đặt lại sự kiện onClick cho trợ giúp
+                        iv5050.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                lifeLine5050();
+                                //Đặt lại sự kiện khi click vào trợ giúp
+                                iv5050.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(PlayActivity.this, "Bạn đã hết lượt sử dụng trợ giúp này", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        //Đóng dialog
+                        buyLifeLineDialog.dismiss();
+                    }
+                    else {
+                        Toast.makeText(PlayActivity.this, "KC không đủ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else if (lifeLineId == R.id.iv_play_ask_audience) {
+            price = 100;
+            int finalPrice = price;
+            btnBuy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Trừ kim cương của người chơi
+                    //Nếu trừ thành công thì cho người dùng tiếp tục sử dụng trợ giúp
+                    if(database.minusDiamond(finalPrice)) {
+                        //Thay đổi src của trợ giúp có thể được dùng
+                        ivAskAudience.setImageResource(R.drawable.button_ask_audience);
+                        //Đặt lại sự kiện onClick cho trợ giúp
+                        ivAskAudience.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                lifeLineAskAudience();
+                                //Đặt lại sự kiện khi click vào trợ giúp
+                                ivAskAudience.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(PlayActivity.this, "Bạn đã hết lượt sử dụng trợ giúp này", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        //Đóng dialog
+                        buyLifeLineDialog.dismiss();
+                    }
+                    else {
+                        Toast.makeText(PlayActivity.this, "KC không đủ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else if (lifeLineId == R.id.iv_play_call) {
+            price = 100;
+            int finalPrice = price;
+            btnBuy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Trừ kim cương của người chơi
+                    //Nếu trừ thành công thì cho người dùng tiếp tục sử dụng trợ giúp
+                    if(database.minusDiamond(finalPrice)) {
+                        //Thay đổi src của trợ giúp có thể được dùng
+                        ivCall.setImageResource(R.drawable.button_ask_audience);
+                        //Đặt lại sự kiện onClick cho trợ giúp
+                        ivCall.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                lifeLineCall();
+                                //Đặt lại sự kiện khi click vào trợ giúp
+                                ivCall.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(PlayActivity.this, "Bạn đã hết lượt sử dụng trợ giúp này", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        //Đóng dialog
+                        buyLifeLineDialog.dismiss();
+                    }
+                    else {
+                        Toast.makeText(PlayActivity.this, "KC không đủ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        else if (lifeLineId == R.id.iv_play_ask_three_audience) {
+            price = 100;
+            int finalPrice = price;
+            btnBuy.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //Trừ kim cương của người chơi
+                    //Nếu trừ thành công thì cho người dùng tiếp tục sử dụng trợ giúp
+                    if(database.minusDiamond(finalPrice)) {
+                        //Thay đổi src của trợ giúp có thể được dùng
+                        ivAskThreeAudience.setImageResource(R.drawable.button_ask_audience);
+                        //Đặt lại sự kiện onClick cho trợ giúp
+                        ivAskThreeAudience.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                lifeLineAskThreeAudience();
+                                //Đặt lại sự kiện khi click vào trợ giúp
+                                ivAskThreeAudience.setOnClickListener(new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Toast.makeText(PlayActivity.this, "Bạn đã hết lượt sử dụng trợ giúp này", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        });
+                        //Đóng dialog
+                        buyLifeLineDialog.dismiss();
+                    }
+                    else {
+                        Toast.makeText(PlayActivity.this, "KC không đủ", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
+        }
+        //Hiển thị giá của trợ giúp
+        tvPrice.setText(price + "");
+        btnClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                buyLifeLineDialog.dismiss();
             }
         });
     }
