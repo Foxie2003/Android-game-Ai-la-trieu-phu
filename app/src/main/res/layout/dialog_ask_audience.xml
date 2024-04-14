@@ -44,7 +44,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:layout_above="@+id/tv_ask_audience_a"
-                android:background="@color/white"/>
+                android:background="@drawable/bg_column"/>
             <TextView
                 android:id="@id/tv_ask_audience_a"
                 android:layout_width="wrap_content"
@@ -75,9 +75,9 @@
             <View
                 android:id="@+id/view_ask_audience_column2"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="200dp"
                 android:layout_above="@+id/tv_ask_audience_b"
-                android:background="@color/white"/>
+                android:background="@drawable/bg_column"/>
             <TextView
                 android:id="@id/tv_ask_audience_b"
                 android:layout_width="wrap_content"
@@ -108,9 +108,9 @@
             <View
                 android:id="@+id/view_ask_audience_column3"
                 android:layout_width="match_parent"
-                android:layout_height="20dp"
+                android:layout_height="100dp"
                 android:layout_above="@+id/tv_ask_audience_c"
-                android:background="@color/white"/>
+                android:background="@drawable/bg_column"/>
             <TextView
                 android:id="@id/tv_ask_audience_c"
                 android:layout_width="wrap_content"
@@ -143,7 +143,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="20dp"
                 android:layout_above="@+id/tv_ask_audience_d"
-                android:background="@color/white"/>
+                android:background="@drawable/bg_column"/>
             <TextView
                 android:id="@id/tv_ask_audience_d"
                 android:layout_width="wrap_content"

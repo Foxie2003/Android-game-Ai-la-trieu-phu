@@ -17,8 +17,8 @@ public class DB {
         //Tạo bảng PlayerInfo nếu nó chưa tồn tại
         Cursor playerInfoCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerInfo'");
         if (playerInfoCursor == null || playerInfoCursor.getCount() <= 0) {
-            db.QueryData("CREATE TABLE IF NOT EXISTS PlayerInfo (Money Integer, Diamond Integer)");
-            db.QueryData("INSERT INTO PlayerInfo VALUES (0, 100)");
+            db.QueryData("CREATE TABLE IF NOT EXISTS PlayerInfo (Money Integer, Diamond Integer, HighestQuestionNumber Integer, AnsweredQuestion Integer, CorrectAnsweredQuestion Integer)");
+            db.QueryData("INSERT INTO PlayerInfo VALUES (12345678, 100, 0, 0, 0)");
         }
         //Tạo bảng Questions nếu nó chưa tồn tại
         Cursor QuestionsCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='Questions'");
@@ -177,14 +177,34 @@ public class DB {
             db.QueryData("INSERT INTO Questions  VALUES (null, 15, 'Củ nào sau đây có vị cay?', 'Khoai tây', 'Cà rốt', 'Sen', 'Gừng', 4, 'q15_10')");
         }
     }
+    //Hàm format định dạng tiền trong game
+    public static String formatNumber(long num) {
+        String[] suffixes = {"", " Nghìn", " Triệu", " Tỉ", " Nghìn tỉ"}; // Các đơn vị tiền tố
+        int suffixIndex = 0;
+        double formattedNumber = num;
+
+        while (formattedNumber >= 1000 && suffixIndex < suffixes.length - 1) {
+            formattedNumber /= 1000.0;
+            suffixIndex++;
+        }
+        if(num % 10 == 0) {
+            return String.format("%.0f%s", formattedNumber, suffixes[suffixIndex]);
+        }
+        else {
+            return String.format("%.2f%s", formattedNumber, suffixes[suffixIndex]);
+        }
+    }
     public long getMoney() {
         //Lấy bản ghi đầu tiên của cột Money trong bảng PlayerInfo
         Cursor data = db.GetData("SELECT Money FROM PlayerInfo LIMIT 1");
         long money = 0;
         if (data != null && data.moveToFirst()) {
-            money = data.getInt(0);
+            money = data.getLong(0);
         }
         return money;
+    }
+    public String getStringMoney() {
+        return formatNumber(getMoney());
     }
     public void setMoney(long money) {
         db.QueryData("UPDATE PlayerInfo SET Money = " + money);
@@ -192,6 +212,19 @@ public class DB {
     //Hàm cộng tiền cho người chơi khi hoàn thành lượt chơi
     public void addMoney(int money) {
         setMoney(getMoney() + money);
+    }
+    //Hàm trừ tiền của người chơi khi mua vật phẩm
+    public boolean minusMoney(long money) {
+        //Kiểm tra xem số tiền của người chơi có lớn hơn hoặc bằng số tiền bị trừ không
+        //Nếu lớn hơn hoặc bằng thì thực hiện trừ tiền
+        if (getMoney() >= money) {
+            setMoney(getMoney() - money);
+            return true;
+        }
+        //Nếu không thì hủy bỏ việc trừ tiền
+        else {
+            return false;
+        }
     }
     public long getDiamond() {
         //Lấy bản ghi đầu tiên của cột Diamond trong bảng PlayerInfo
@@ -217,6 +250,57 @@ public class DB {
         else {
             return false;
         }
+    }
+    public int getHighestQuestionNumber() {
+        //Lấy bản ghi đầu tiên của cột HighestQuestionNumber trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT HighestQuestionNumber FROM PlayerInfo LIMIT 1");
+        int highestQuestionNumber = 0;
+        if (data != null && data.moveToFirst()) {
+            highestQuestionNumber = data.getInt(0);
+        }
+        return highestQuestionNumber;
+    }
+    private void setHighestQuestionNumber(int questionNumber) {
+        db.QueryData("UPDATE PlayerInfo SET HighestQuestionNumber = " + questionNumber);
+    }
+    //Hàm cập nhật kỷ lục câu hỏi cao nhất
+    public void updateHighestQuestionNumber(int questionNumber) {
+        //Nếu câu hỏi cao nhất mới lớn hơn câu hỏi cao nhất cũ thì mới cập nhật
+        if(questionNumber > getHighestQuestionNumber()) {
+            setHighestQuestionNumber(questionNumber);
+        }
+    }
+    public int getAnsweredQuestion() {
+        //Lấy bản ghi đầu tiên của cột AnsweredQuestion trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT AnsweredQuestion FROM PlayerInfo LIMIT 1");
+        int answeredQuestion = 0;
+        if (data != null && data.moveToFirst()) {
+            answeredQuestion = data.getInt(0);
+        }
+        return answeredQuestion;
+    }
+    public void setAnsweredQuestion(int answeredQuestion) {
+        db.QueryData("UPDATE PlayerInfo SET AnsweredQuestion = " + answeredQuestion);
+    }
+    //Hàm cập nhật số câu hỏi đã trả lời
+    public void updateAnsweredQuestion(int answeredQuestion) {
+        setAnsweredQuestion(getAnsweredQuestion() + answeredQuestion);
+    }
+    public int getCorrectAnsweredQuestion() {
+        //Lấy bản ghi đầu tiên của cột AnsweredQuestion trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT CorrectAnsweredQuestion FROM PlayerInfo LIMIT 1");
+        int correctAnsweredQuestion = 0;
+        if (data != null && data.moveToFirst()) {
+            correctAnsweredQuestion = data.getInt(0);
+        }
+        return correctAnsweredQuestion;
+    }
+    public void setCorrectAnsweredQuestion(int correctAnsweredQuestion) {
+        db.QueryData("UPDATE PlayerInfo SET CorrectAnsweredQuestion = " + correctAnsweredQuestion);
+    }
+    //Hàm cập nhật số câu hỏi đã trả lời đúng
+    public void updateCorrectAnsweredQuestion(int correctAnsweredQuestion) {
+        setCorrectAnsweredQuestion(getCorrectAnsweredQuestion() + correctAnsweredQuestion);
     }
     public Question getQuestionByQN(int questionNumber) {
         //Lấy bản ghi ngẫu nhiên trong bảng Question với questionNumber

@@ -73,6 +73,7 @@ public class PlayActivity extends AppCompatActivity {
     private ImageView ivCountdown, iv5050, ivAskAudience, ivCall, ivAskThreeAudience;
     private CountDownTimer countDownTimer;
     private final long totalTimeInMillis = 30000; // 30 seconds
+    private long timeLeftInMillis = 0;
     private DrawerLayout layoutPlay;
     private LinearLayout layoutPlayMain, layoutAnswers, layoutLifelines, layoutAds;
     private RelativeLayout layoutCountDown;
@@ -259,7 +260,7 @@ public class PlayActivity extends AppCompatActivity {
                             @Override
                             public void run() {
                                 //Load câu hỏi đầu tiên sau khi đủ thời gian trễ
-                                question = new Question(database.getQuestionByQN(1));
+                                question = new Question(database.getQuestionByQN(15));
                                 loadQuestion(question);
                             }
                         }, 1000);
@@ -414,7 +415,6 @@ public class PlayActivity extends AppCompatActivity {
                     mInterstitialAd = interstitialAd;
                     Log.i(TAG, "onAdLoaded");
                 }
-
                 @Override
                 public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
                     // Handle the error
@@ -558,10 +558,11 @@ public class PlayActivity extends AppCompatActivity {
     }
 
     //Hàm bắt đầu đếm giờ
-    private void startCountdown() {
-        countDownTimer = new CountDownTimer(totalTimeInMillis, 1000) {
+    private void startCountdown(long timeInMillis) {
+        countDownTimer = new CountDownTimer(timeInMillis, 1000) {
             @Override
             public void onTick(long millisUntilFinished) {
+                timeLeftInMillis = millisUntilFinished;
                 updateCountdownText(millisUntilFinished);
             }
 
@@ -617,6 +618,14 @@ public class PlayActivity extends AppCompatActivity {
         }
     }
 
+    //Khi activity có sự thay đổi về focus
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+        super.onWindowFocusChanged(hasFocus);
+        //Ẩn thanh công cụ
+        hideNavigationBar();
+    }
+
     //Hàm lấy ra id của file âm thanh từ tên file
     private int getRawId(String fileName) {
         return getResources().getIdentifier(fileName, "raw", getPackageName());
@@ -626,9 +635,11 @@ public class PlayActivity extends AppCompatActivity {
         hideNavigationBar();
         disableAllButtons();
         //Hiển thị thời gian khi đồng hồ chưa đếm
-        tvCountdown.setText("30");
+//        tvCountdown.setText("30");
         //Hiện thị số câu hiện tại
         btnQuestionNumber.setText(question.getQuestionNumber() + "/15");
+        //Bắt đầu đếm giờ
+        startCountdown(totalTimeInMillis);
         //Xóa hết nội dung câu hỏi, câu trả lời cũ
         tvQuestion.setText(null);
         btnAnswerA.setText(null);
@@ -642,7 +653,10 @@ public class PlayActivity extends AppCompatActivity {
             @Override
             public void onCompletion(MediaPlayer mp) {
                 soundManager.removeOnCompletionListener();
+                //Hiển thị nội dung câu hỏi
                 tvQuestion.setText(question.getQuestion());
+                //Đọc nội dung câu hỏi
+                soundManager.playSound(getRawId(question.getAudioFileName()));
                 // Tạo một Handler để định thời gian trễ
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
@@ -674,16 +688,6 @@ public class PlayActivity extends AppCompatActivity {
                         enableAllButtons();
                     }
                 }, 3000);
-                //Đọc nội dung câu hỏi
-                soundManager.playSound(getRawId(question.getAudioFileName()));
-                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-                    @Override
-                    public void onCompletion(MediaPlayer mp) {
-                        soundManager.removeOnCompletionListener();
-                        //Bắt đầu đếm giờ
-                        startCountdown();
-                    }
-                });
             }
         });
     }
@@ -911,9 +915,12 @@ public class PlayActivity extends AppCompatActivity {
                     percents.set(3, tmp);
                 }
                 //Hiển thị dialog hỏi ý kiến khán giả trong trường quay
-                FullScreenDialog askAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_audience);
+                Dialog askAudienceDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+                askAudienceDialog.setContentView(R.layout.dialog_ask_audience);
                 askAudienceDialog.setCancelable(false);
                 askAudienceDialog.show();
+                //Ẩn thanh công cụ
+                askAudienceDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
                 //Khởi tạo mảng chứa các view để tiện sử dụng
                 ArrayList<View> columns = new ArrayList<>();
                 columns.add(askAudienceDialog.findViewById(R.id.view_ask_audience_column1));
@@ -956,10 +963,9 @@ public class PlayActivity extends AppCompatActivity {
                     @Override
                     public void onClick(View v) {
                         //Tiếp tục đếm ngược
-                        countDownTimer.start();
+                        startCountdown(timeLeftInMillis);
                         //Thoát dialog
                         askAudienceDialog.dismiss();
-                        hideNavigationBar();
                     }
                 });
             }
@@ -988,9 +994,12 @@ public class PlayActivity extends AppCompatActivity {
                         //Phát âm thanh trả lời của người thân
                         soundManager.playSound(helpAnswerSounds.get(question.getCorrectAnswer() - 1));
                         //Hiển thị dialog gọi điện thoại cho người thân
-                        FullScreenDialog callDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_call);
+                        Dialog callDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+                        callDialog.setContentView(R.layout.dialog_call);
                         callDialog.setCancelable(false);
                         callDialog.show();
+                        //Ẩn thanh công cụ
+                        callDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
                         //Hiện thị đáp án của người thân
                         TextView tvAnswer = callDialog.findViewById(R.id.tv_call_answer);
                         tvAnswer.setText("Câu trả lời của tôi là: " + question.getCorrectAnswerString());
@@ -1000,10 +1009,9 @@ public class PlayActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 //Tiếp tục đếm ngược
-                                countDownTimer.start();
+                                startCountdown(timeLeftInMillis);
                                 //Thoát dialog
                                 callDialog.dismiss();
-                                hideNavigationBar();
                             }
                         });
                     }
@@ -1048,9 +1056,12 @@ public class PlayActivity extends AppCompatActivity {
                             }
                         }
                         //Hiển thị dialog tổ tư vấn tại chỗ
-                        FullScreenDialog askThreeAudienceDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_ask_three_audience);
+                        Dialog askThreeAudienceDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+                        askThreeAudienceDialog.setContentView(R.layout.dialog_ask_three_audience);
                         askThreeAudienceDialog.setCancelable(false);
                         askThreeAudienceDialog.show();
+                        //Ẩn thanh công cụ
+                        askThreeAudienceDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
                         //Hiện thị đáp án của tổ tư vấn
                         TextView tvAnswer1 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_1);
                         TextView tvAnswer2 = askThreeAudienceDialog.findViewById(R.id.tv_ask_three_audience_2);
@@ -1080,10 +1091,9 @@ public class PlayActivity extends AppCompatActivity {
                             @Override
                             public void onClick(View v) {
                                 //Tiếp tục đếm ngược
-                                countDownTimer.start();
+                                startCountdown(timeLeftInMillis);
                                 //Thoát dialog
                                 askThreeAudienceDialog.dismiss();
-                                hideNavigationBar();
                             }
                         });
                     }
@@ -1102,19 +1112,27 @@ public class PlayActivity extends AppCompatActivity {
         //Phát âm thanh kết thúc trò chơi
         soundManager.playSound(R.raw.mc_game_over);
         //Hiển thị dialog kết thúc trò chơi
-        FullScreenDialog gameoverDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_game_over);
+        Dialog gameoverDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+        gameoverDialog.setContentView(R.layout.dialog_game_over);
         gameoverDialog.setCancelable(false);
         gameoverDialog.show();
+        //Ẩn thanh công cụ
+        gameoverDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         TextView tvPrizeResult = gameoverDialog.findViewById(R.id.tv_gameover_prize);
         TextView tvQuestionNumber = gameoverDialog.findViewById(R.id.tv_gameover_question_number);
         TextView tvHighQN = gameoverDialog.findViewById(R.id.tv_gameover_high_question_number);
         AppCompatButton btnGoHome = gameoverDialog.findViewById(R.id.btn_gameover_home);
         AppCompatButton btnTryAgain = gameoverDialog.findViewById(R.id.btn_gameover_try_again);
+        //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
+        database.updateHighestQuestionNumber(question.getQuestionNumber() - 1);
+        //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng
+        database.updateAnsweredQuestion(question.getQuestionNumber());
+        database.updateCorrectAnsweredQuestion(question.getQuestionNumber() - 1);
         //Hiển thị số tiền thắng
         tvPrizeResult.setText(new DecimalFormat("###,###,###").format(prizeResult) + " VND");
         //Hiển thị số câu và kỉ lục
         tvQuestionNumber.setText("Câu số: " + (question.getQuestionNumber() - 1));
-        tvHighQN.setText("Kỉ lục: " + 15);
+        tvHighQN.setText("Kỉ lục: " + database.getHighestQuestionNumber());
         btnGoHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1132,10 +1150,6 @@ public class PlayActivity extends AppCompatActivity {
                 });
                 //Ẩn dialog kết thúc trò chơi
                 gameoverDialog.dismiss();
-                // Ẩn thanh công cụ (navigation bar)
-                View decorView = getWindow().getDecorView();
-                int uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-                decorView.setSystemUiVisibility(uiOptions);
                 //Kích hoạt các button trở lại
                 enableAllButtons();
                 //Load lại câu hỏi
@@ -1155,19 +1169,27 @@ public class PlayActivity extends AppCompatActivity {
         //Phát âm thanh chiến thắng trò chơi
         soundManager.playSound(R.raw.mc_win);
         //Hiển thị dialog chiến thắng trò chơi
-        FullScreenDialog winDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_win);
+        Dialog winDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+        winDialog.setContentView(R.layout.dialog_win);
         winDialog.setCancelable(false);
         winDialog.show();
+        //Ẩn thanh công cụ
+        winDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         TextView tvPrizeResult = winDialog.findViewById(R.id.tv_win_prize);
         TextView tvQuestionNumber = winDialog.findViewById(R.id.tv_win_question_number);
         TextView tvHighQN = winDialog.findViewById(R.id.tv_win_high_question_number);
         AppCompatButton btnGoHome = winDialog.findViewById(R.id.btn_win_home);
         AppCompatButton btnShare = winDialog.findViewById(R.id.btn_win_share);
+        //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
+        database.updateHighestQuestionNumber(question.getQuestionNumber());
+        //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng
+        database.updateAnsweredQuestion(question.getQuestionNumber());
+        database.updateCorrectAnsweredQuestion(question.getQuestionNumber());
         //Hiển thị số tiền thắng
         tvPrizeResult.setText(new DecimalFormat("###,###,###").format(prizeResult) + " VND");
         //Hiển thị số câu và kỉ lục
         tvQuestionNumber.setText("Câu số: " + question.getQuestionNumber());
-        tvHighQN.setText("Kỉ lục: " + 15);
+        tvHighQN.setText("Kỉ lục: " + database.getHighestQuestionNumber());
         btnGoHome.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1184,9 +1206,12 @@ public class PlayActivity extends AppCompatActivity {
     //Hàm hiển thị dialog mua trợ giúp
     private void showBuyLifeLineDialog(int lifeLineId) {
         //Hiển thị dialog mua trợ giúp
-        FullScreenDialog buyLifeLineDialog = new FullScreenDialog(PlayActivity.this, R.layout.dialog_buy_lifeline);
+        Dialog buyLifeLineDialog = new Dialog(PlayActivity.this, android.R.style.Theme_DeviceDefault_Dialog_NoActionBar);
+        buyLifeLineDialog.setContentView(R.layout.dialog_buy_lifeline);
         buyLifeLineDialog.setCancelable(false);
         buyLifeLineDialog.show();
+        //Ẩn thanh công cụ
+        buyLifeLineDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         TextView tvPrice = buyLifeLineDialog.findViewById(R.id.tv_buy_lifeline_price);
         AppCompatButton btnClose = buyLifeLineDialog.findViewById(R.id.btn_buy_lifeline_close);
         AppCompatButton btnBuy = buyLifeLineDialog.findViewById(R.id.btn_buy_lifeline_buy);

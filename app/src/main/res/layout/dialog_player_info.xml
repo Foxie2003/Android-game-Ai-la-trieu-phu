@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="340dp"
+    android:layout_height="300dp"
+    android:orientation="vertical"
+    android:padding="20dp"
+    android:gravity="bottom"
+    android:background="@drawable/bg_style_4"
+    android:weightSum="100">
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:text="Thông tin người chơi/Thành tích:"
+        android:layout_weight="10"
+        android:layout_gravity="center"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        android:textColor="@color/white"/>
+    <TextView
+        android:id="@+id/tv_player_info_answered_question"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="35"
+        android:text="Số câu đã trả lời: "
+        android:textSize="26sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/white">
+    </TextView>
+    <TextView
+        android:id="@+id/tv_player_info_correct_answered_question"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="35"
+        android:text="Số câu đã trả lời đúng: "
+        android:textSize="26sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@color/white">
+    </TextView>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="20"
+        android:orientation="horizontal"
+        android:weightSum="3">
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_player_info_sign_in"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_round_1"
+            android:text="Đăng nhập"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_player_info_sign_out"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_round_1"
+            android:text="Đăng xuất"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_player_info_close"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@drawable/button_round_1"
+            android:text="Đóng"
+            android:textColor="@color/white"
+            android:textSize="16sp"/>
+    </LinearLayout>
+</LinearLayout>

@@ -28,7 +28,10 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Objects;
@@ -62,6 +65,8 @@ public class SignIn extends AppCompatActivity {
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                gsc.signOut();
+//                FirebaseAuth.getInstance().signOut();
                 signIn();
             }
         });
@@ -109,9 +114,30 @@ public class SignIn extends AppCompatActivity {
                             map.put("name", user.getDisplayName());
                             map.put("profile", user.getPhotoUrl().toString());
 
-                            // Lưu thông tin người dùng vào Realtime Database
-                            database.getReference().child("users").child(user.getUid())
-                                    .setValue(map);
+                            //Kiểm tra xem thông tin người dùng đã tồn tại chưa
+                            //ListenerForSingleValueEvent sẽ đọc dữ liệu một lần duy nhất
+                            database.getReference().child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                                    //Nếu thông tin người dùng đã tồn tại
+                                    if (snapshot.exists()) {
+                                        Toast.makeText(SignIn.this, "Old player", Toast.LENGTH_SHORT).show();
+                                    }
+                                    //Nếu thông tin người dùng chưa tồn tại
+                                    else {
+                                        Toast.makeText(SignIn.this, "New player", Toast.LENGTH_SHORT).show();
+                                        // Lưu thông tin người dùng vào Realtime Database
+                                        database.getReference().child("users").child(user.getUid())
+                                                .setValue(map);
+                                    }
+                                }
+
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError error) {
+                                    // Xử lý khi có lỗi xảy ra
+                                    Log.w("TAG", "loadPost:onCancelled", error.toException());
+                                }
+                            });
 
                             // Chuyển sang màn hình chơi
                             Intent intent = new Intent(SignIn.this, PlayActivity.class);
