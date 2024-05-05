@@ -8,7 +8,9 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
@@ -23,6 +25,7 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -39,14 +42,21 @@ import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private DB database;
     FirebaseAuth auth;
     private SoundManager backgroundSoundManager, soundEffectManager;
     private TextView tvMoney, tvDiamond;
-    private ImageView ivAvatar, ivMainShop;
+    private ImageView ivAvatar, ivMainShop, ivSettings, ivExit;
     private ImageButton ibtnPlay;
+    SharedPreferences prefs;
+    private boolean music;
+    private boolean sound;
+    private SeekBar seekBarMusic,seekBarSound;
+    float volumnMusic,volumnSound;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -64,6 +74,8 @@ public class MainActivity extends AppCompatActivity {
         ivAvatar = findViewById(R.id.iv_main_avatar);
         ibtnPlay = findViewById(R.id.ibtn_main_play);
         ivMainShop = findViewById(R.id.iv_main_shop);
+        ivSettings = findViewById(R.id.iv_main_settings);
+        ivExit = findViewById(R.id.iv_main_exit);
 
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(MainActivity.this.getApplicationContext());
@@ -72,18 +84,26 @@ public class MainActivity extends AppCompatActivity {
         //Khởi tạo đối tượng Firebase Auth để xác thực người dùng
         auth = FirebaseAuth.getInstance();
 
+        //Lấy dữ liệu cài đặt
+        prefs= getSharedPreferences("game", MODE_PRIVATE);
+        music = prefs.getBoolean("isMusicOn", true);
+        sound = prefs.getBoolean("isSoundOn", true);
+        volumnMusic = prefs.getFloat("volumnMusic",1);
+        volumnSound = prefs.getFloat("volumnSound",1);
+
         //Khởi tạo đối tượng SoundManager để phát âm thanh
         backgroundSoundManager = new SoundManager(MainActivity.this);
         soundEffectManager = new SoundManager(MainActivity.this);
 
-        //Phát âm thanh nền trong menu
-//        backgroundSoundManager.playSound(R.raw.mc_wellcome);
-//        backgroundSoundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-//            @Override
-//            public void onCompletion(MediaPlayer mp) {
-//                backgroundSoundManager.playSoundLoop(R.raw.bg_music_menu);
-//            }
-//        });
+        //Phát âm thanh chào mừng
+        soundEffectManager.playSound(R.raw.mc_wellcome, volumnSound);
+        soundEffectManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+            @Override
+            public void onCompletion(MediaPlayer mp) {
+                backgroundSoundManager.playSoundLoop(R.raw.bg_music_menu, volumnMusic);
+                soundEffectManager.removeOnCompletionListener();
+            }
+        });
         //Hiện thị số tiền đang có của người chơi
         showPlayerMoney();
         //Hiện thị số kim cương đang có của người chơi
@@ -92,7 +112,7 @@ public class MainActivity extends AppCompatActivity {
         ibtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                soundEffectManager.playSound(R.raw.bg_select_ans);
+                soundEffectManager.playSound(R.raw.bg_select_ans, volumnSound);
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
@@ -113,8 +133,21 @@ public class MainActivity extends AppCompatActivity {
         ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                startActivity(new Intent(MainActivity.this, SignIn.class));
                 showPlayerInfoDialog();
+            }
+        });
+        //Bắt sự kiện khi ấn nút "cài đặt"
+        ivSettings.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showSettingsDialog();
+            }
+        });
+        //Bắt sự kiện khi ấn nút "thoát"
+        ivExit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showExitDialog();
             }
         });
     }
@@ -216,5 +249,165 @@ public class MainActivity extends AppCompatActivity {
                 playerInfoDialog.dismiss();
             }
         });
+    }
+    private void showSettingsDialog() {
+        Dialog dialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        dialog.setContentView(R.layout.dialog_settings);
+        dialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        TextView tvClose = dialog.findViewById(R.id.tv_settings_close);
+        TextView tvMusicValue = dialog.findViewById(R.id.tv_settings_music_value);
+        TextView tvSoundValue = dialog.findViewById(R.id.tv_settings_sound_value);
+        RelativeLayout layoutWrap = dialog.findViewById(R.id.layout_settings_wrap);
+        ImageView ivMusic = dialog.findViewById(R.id.iv_settings_music);
+        ImageView ivSound = dialog.findViewById(R.id.iv_settings_sound);
+        seekBarMusic = dialog.findViewById(R.id.sb_setting_music);
+        seekBarSound = dialog.findViewById(R.id.sb_setting_sound);
+        if(music) {
+            ivMusic.setImageResource(R.drawable.icon_music);
+        }
+        else {
+            ivMusic.setImageResource(R.drawable.icon_music_mute);
+        }
+
+        if(sound) {
+            ivSound.setImageResource(R.drawable.icon_sound);
+        }
+        else {
+            ivSound.setImageResource(R.drawable.icon_sound_mute);
+        }
+
+        seekBarMusic.setMax(100);
+        int progress1 = (int) (100 - Math.pow(10, (1 - volumnMusic) * Math.log10(100)));
+        seekBarMusic.setProgress(progress1);
+        tvMusicValue.setText(String.valueOf(progress1));
+
+        seekBarSound.setMax(100);
+        int progress2 = (int) (100 - Math.pow(10, (1 - volumnSound) * Math.log10(100)));
+        seekBarSound.setProgress(progress2);
+        tvSoundValue.setText(String.valueOf(progress2));
+
+        // nhạc nền
+        seekBarMusic.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress!=0){
+                    ivMusic.setImageResource(R.drawable.icon_music);
+                    music=true;
+                }
+                else {
+                    ivMusic.setImageResource(R.drawable.icon_music_mute);
+                    music=false;
+                }
+                tvMusicValue.setText(String.valueOf(progress));
+                volumnMusic = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                backgroundSoundManager.mediaPlayer.setVolume(volumnMusic, volumnMusic); // Thiết lập âm lượng của MediaPlayer
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putFloat("volumnMusic", volumnMusic);
+                editor.putBoolean("isMusicOn",music);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //tiếng lại văn sâm
+        seekBarSound.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if(progress!=0){
+                    ivSound.setImageResource(R.drawable.icon_sound);
+                    sound=true;
+                }
+                else {
+                    ivSound.setImageResource(R.drawable.icon_sound_mute);
+                    sound=false;
+                }
+                tvSoundValue.setText(String.valueOf(progress));
+                volumnSound = (float) (1 - (Math.log(100 - progress) / Math.log(100)));
+                soundEffectManager.mediaPlayer.setVolume(volumnSound, volumnSound);
+                SharedPreferences.Editor editor = prefs.edit();
+                editor.putFloat("volumnSound", volumnSound);
+                editor.putBoolean("isSoundOn",sound);
+                editor.apply();
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {}
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {}
+        });
+        //Khi bấm chữ trở về thì đóng dialog
+        tvClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Thoát dialog
+                dialog.dismiss();
+            }
+        });
+        layoutWrap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Thoát dialog
+                dialog.dismiss();
+            }
+        });
+        //Áp dụng animation cho chữ
+        Animation fadeInAnimation = AnimationUtils.loadAnimation(MainActivity.this, R.anim.growing_light);
+        tvClose.startAnimation(fadeInAnimation);
+
+        dialog.show();
+    }
+
+    //Hàm hiện dialog thoát trò chơi
+    public void showExitDialog() {
+        //Tạo dialog thoát trò chơi
+        Dialog exitDialog = new Dialog(MainActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        exitDialog.setContentView(R.layout.dialog_exit);
+        exitDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
+        exitDialog.show();
+        //Ẩn thanh công cụ
+        exitDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
+        AppCompatButton btnExitYes = exitDialog.findViewById(R.id.btn_exit_yes);
+        AppCompatButton btnExitNo = exitDialog.findViewById(R.id.btn_exit_no);
+        RelativeLayout layoutWrap = exitDialog.findViewById(R.id.layout_exit_wrap);
+        TextView tvClose = exitDialog.findViewById(R.id.tv_exit_close);
+
+        //Khi bấm chữ thoát thì thoát trò chơi
+        btnExitYes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                MainActivity.this.finish();
+            }
+        });
+        //Khi bấm chữ hủy thì đóng dialog
+        btnExitNo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Thoát dialog
+                exitDialog.dismiss();
+            }
+        });
+        tvClose.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Thoát dialog
+                exitDialog.dismiss();
+            }
+        });
+        layoutWrap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                //Thoát dialog
+                exitDialog.dismiss();
+            }
+        });
+        //Áp dụng animation cho chữ
+        Animation growingLight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.growing_light);
+        tvClose.startAnimation(growingLight);
     }
 }

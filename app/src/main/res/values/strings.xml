@@ -15,4 +15,6 @@
     <string name="prize_money_13">13. 60.000.000</string>
     <string name="prize_money_14">14. 85.000.000</string>
     <string name="prize_money_15">15. 150.000.000</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

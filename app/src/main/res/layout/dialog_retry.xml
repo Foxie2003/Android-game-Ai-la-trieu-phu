@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/layout_retry_wrap"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#66000000">
+    <LinearLayout
+        android:id="@+id/layout_retry_main"
+        android:layout_width="390dp"
+        android:layout_height="310dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_dialog_3"
+        android:gravity="center"
+        android:orientation="vertical"
+        android:padding="60dp">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/anton_regular"
+            android:gravity="center"
+            android:padding="5dp"
+            android:shadowColor="#FFA6FF"
+            android:shadowDx="0.0"
+            android:shadowDy="0.0"
+            android:shadowRadius="16"
+            android:text="Bạn có muốn xem một quảng cáo ngắn để tiếp tục chơi không?"
+            android:textColor="#FFA6FF"
+            android:textSize="16sp" />
+
+        <TextView
+            android:id="@+id/tv_retry_countdown"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/bg_countdown"
+            android:fontFamily="@font/anton_regular"
+            android:gravity="center"
+            android:padding="5dp"
+            android:shadowColor="#FFA6FF"
+            android:shadowDx="0.0"
+            android:shadowDy="0.0"
+            android:shadowRadius="16"
+            android:text="5"
+            android:textColor="#FFA6FF"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+            <ImageView
+                android:id="@+id/iv_retry_yes"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginRight="10dp"
+                android:padding="15dp"
+                android:src="@drawable/item_diamond_1_price"
+                android:background="@drawable/selector_round_button"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_retry_no"
+                android:layout_width="100dp"
+                android:layout_height="50dp"
+                android:layout_marginLeft="10dp"
+                android:fontFamily="@font/anton_regular"
+                android:gravity="center"
+                android:padding="5dp"
+                android:shadowColor="#FFA6FF"
+                android:shadowDx="0.0"
+                android:shadowDy="0.0"
+                android:shadowRadius="16"
+                android:text="Hủy"
+                android:textColor="#FFA6FF"
+                android:textSize="16sp"
+                android:background="@drawable/selector_round_button"/>
+        </LinearLayout>
+    </LinearLayout>
+    <TextView
+        android:id="@+id/tv_retry_close"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/layout_retry_main"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="50dp"
+        android:padding="5dp"
+        android:shadowColor="#FFA6FF"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="16"
+        android:text="Chạm vào vị trí bất kỳ để đóng"
+        android:textColor="#FFA6FF"
+        android:textSize="20sp"
+        android:fontFamily="@font/tiltneon_regular_variablefont_xrot_yrot"/>
+</RelativeLayout>

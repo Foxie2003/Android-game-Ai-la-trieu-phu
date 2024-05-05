@@ -5,7 +5,7 @@ import android.media.MediaPlayer;
 import java.util.ArrayList;
 
 public class SoundManager {
-    private MediaPlayer mediaPlayer;
+    public MediaPlayer mediaPlayer;
     private Context context;
 
     public SoundManager(Context context) {
@@ -14,24 +14,26 @@ public class SoundManager {
     }
 
     // Phát âm thanh từ một ID âm thanh
-    public void playSound(int soundResId) {
+    public void playSound(int soundResId, float volume) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
         }
 
         mediaPlayer = MediaPlayer.create(context, soundResId);
+        mediaPlayer.setVolume(volume, volume);
         mediaPlayer.start();
     }
 
     // Phát âm thanh lặp lại từ một ID âm thanh
-    public void playSoundLoop(int soundResId) {
+    public void playSoundLoop(int soundResId, float volume) {
         if (mediaPlayer.isPlaying()) {
             mediaPlayer.stop();
             mediaPlayer.reset();
         }
 
         mediaPlayer = MediaPlayer.create(context, soundResId);
+        mediaPlayer.setVolume(volume, volume);
         mediaPlayer.setLooping(true);
         mediaPlayer.start();
     }
