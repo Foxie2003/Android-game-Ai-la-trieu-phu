@@ -35,12 +35,12 @@ import java.util.Arrays;
 import java.util.Objects;
 
 public class ShopActivity extends AppCompatActivity {
-    private DB database;
-    private TextView tvMoney, tvDiamond;
-    RecyclerView recyclerView;
+    private static DB database;
+    private static TextView tvMoney;
+    private TextView tvDiamond;
+
     SharedPreferences prefs;
-    private ArrayList<ShopItem> items;
-    private ShopItemAdapter shopItemAdapter;
+
     private ImageView ivWatchAds;
     private ImageButton btnBack;
     private RewardedAd rewardedAd;
@@ -66,7 +66,6 @@ public class ShopActivity extends AppCompatActivity {
         // Ánh xạ các thành phần trong layout
         tvMoney = findViewById(R.id.tv_shop_money);
         tvDiamond = findViewById(R.id.tv_shop_diamond);
-        recyclerView = findViewById(R.id.rv_shop_items);
         ivWatchAds = findViewById(R.id.iv_shop_watch_ads);
         btnBack = findViewById(R.id.ibtn_shop_back);
         //Khởi tạo đối tượng database và khởi tạo database
@@ -82,38 +81,13 @@ public class ShopActivity extends AppCompatActivity {
         adapter = new CategoryPagerAdapter(getSupportFragmentManager());
 
         adapter.addFragment(new FragmentTaiSan(), "Tài sản");
-        adapter.addFragment(new FragmentTaiSan(), "Avatar");
-        adapter.addFragment(new FragmentTaiSan(), "Khung");
+        adapter.addFragment(new FragmentAvatar(), "Avatar");
+        adapter.addFragment(new FragmentKhung(), "Khung");
 
         viewPager.setAdapter(adapter);
         tabLayout.setupWithViewPager(viewPager);
         setupCustomTabLayout();
-        //Khởi tạo ArrayList chứa dữ liệu của những item trong cửa hàng
-        items = database.getItemsByCategory(1);
 
-        //Hiển thị các item trong cửa hàng lên recyclerView
-        recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        shopItemAdapter = new ShopItemAdapter(this, items, new ShopItemAdapter.OnItemClickListener() {
-            @Override
-            public void onBuyItemClick(ShopItem item) {
-                if(item.isBought()) {
-                    Toast.makeText(ShopActivity.this, "Vật phẩm này đã được mua", Toast.LENGTH_SHORT).show();
-                }
-                else {
-                    if(database.minusMoney(item.getPrice())) {
-                        showPlayerMoney();
-                        item.setBought(true);
-
-                        // Thông báo cho Adapter biết rằng một mục đã thay đổi
-                        shopItemAdapter.notifyItemChanged(items.indexOf(item));
-                    }
-                    else {
-                        Toast.makeText(ShopActivity.this, "Bạn không đủ tiền", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-        });
-        recyclerView.setAdapter(shopItemAdapter);
 
         loadRewardedAd();
         ivWatchAds.setOnClickListener(new View.OnClickListener() {
@@ -150,7 +124,7 @@ public class ShopActivity extends AppCompatActivity {
         decorView.setSystemUiVisibility(uiOptions);
     }
     //Hàm hiển thị số tiền đang có của người chơi
-    private void showPlayerMoney() {
+    public static void showPlayerMoney() {
         tvMoney.setText(database.getStringMoney());
     }
     //Hàm hiển thị số kim cương đang có của người chơi
@@ -187,9 +161,18 @@ public class ShopActivity extends AppCompatActivity {
                 // Get custom view of the tab
                 View tabView = tab.getCustomView();
                 if (tabView != null) {
-                    TextView textView = tabView.findViewById(R.id.tab_textview);
-                    // Customize text as per your requirement
-                    textView.setText(adapter.getPageTitle(i));
+                    ImageView imageView = tabView.findViewById(R.id.iv_tab_image);
+                    switch (i) {
+                        case (0):
+                            imageView.setImageResource(R.drawable.bg_category_tai_san);
+                            break;
+                        case (1):
+                            imageView.setImageResource(R.drawable.bg_category_avatar);
+                            break;
+                        case (2):
+                            imageView.setImageResource(R.drawable.bg_category_khung);
+                            break;
+                    }
                 }
             }
         }

@@ -4,9 +4,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".FragmentTaiSan">
+    tools:context=".FragmentKhung">
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rv_tai_san"
+        android:id="@+id/rv_khung"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 </LinearLayout>

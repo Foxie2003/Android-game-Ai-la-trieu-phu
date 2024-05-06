@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class FragmentTaiSan extends Fragment {
+public class FragmentKhung extends Fragment {
     private DB database;
     private ArrayList<ShopItem> items;
     private ShopItemAdapter shopItemAdapter;
@@ -27,12 +27,12 @@ public class FragmentTaiSan extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_tai_san, container, false);
-        recyclerView = view.findViewById(R.id.rv_tai_san);
+        View view = inflater.inflate(R.layout.fragment_khung, container, false);
+        recyclerView = view.findViewById(R.id.rv_khung);
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(getContext());
         //Khởi tạo ArrayList chứa dữ liệu của những item trong cửa hàng
-        items = database.getItemsByCategory(1);
+        items = database.getItemsByCategory(3);
 
         //Hiển thị các item trong cửa hàng lên recyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));

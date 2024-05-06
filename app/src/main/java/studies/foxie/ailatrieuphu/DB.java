@@ -34,8 +34,36 @@ public class DB {
         Cursor itemsCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='Items'");
         if (itemsCursor == null || itemsCursor.getCount() <= 0) {
             db.QueryData("CREATE TABLE IF NOT EXISTS Items (id INTEGER PRIMARY KEY AUTOINCREMENT, categoryId INTEGER, name NVARCHAR(20), price INTEGER, image VARCHAR, isBought INTEGER, FOREIGN KEY (categoryId) REFERENCES ItemCategory(id))");
-//            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'image', 1)");
-//            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'image', 1)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt7', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt8', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt9', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt10', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt11', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt12', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt13', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt14', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt15', 0)");
+
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung7', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung8', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung9', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung10', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung11', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung12', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung13', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung14', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung15', 0)");
+
             db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 1',1000000, 'item_motorbike_1', 0)");
             db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 2',1000000, 'item_motorbike_2', 0)");
             db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 3',1000000, 'item_motorbike_3', 0)");
