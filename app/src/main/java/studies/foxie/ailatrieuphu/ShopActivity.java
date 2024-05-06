@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.Activity;
 import android.content.SharedPreferences;
@@ -27,6 +28,7 @@ import com.google.android.gms.ads.initialization.OnInitializationCompleteListene
 import com.google.android.gms.ads.rewarded.RewardItem;
 import com.google.android.gms.ads.rewarded.RewardedAd;
 import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -43,6 +45,7 @@ public class ShopActivity extends AppCompatActivity {
     private ImageButton btnBack;
     private RewardedAd rewardedAd;
     private final String TAG = "ShopActivity";
+    private CategoryPagerAdapter adapter;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,29 +76,20 @@ public class ShopActivity extends AppCompatActivity {
         showPlayerMoney();
         //Hiện thị số kim cương đang có của người chơi
         showPlayerDiamond();
+        ViewPager viewPager = findViewById(R.id.viewPager);
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+
+        adapter = new CategoryPagerAdapter(getSupportFragmentManager());
+
+        adapter.addFragment(new FragmentTaiSan(), "Tài sản");
+        adapter.addFragment(new FragmentTaiSan(), "Avatar");
+        adapter.addFragment(new FragmentTaiSan(), "Khung");
+
+        viewPager.setAdapter(adapter);
+        tabLayout.setupWithViewPager(viewPager);
+        setupCustomTabLayout();
         //Khởi tạo ArrayList chứa dữ liệu của những item trong cửa hàng
         items = database.getItemsByCategory(1);
-        Log.e(TAG, "onCreate: " + items.size());
-
-//        ArrayList<ShopItem> shopItems = new ArrayList<>();
-//        shopItems.add(new ShopItem(1, 1, "Xe máy 1",1000000, "item_motorbike_1", false));
-//        shopItems.add(new ShopItem(2, R.drawable.item_motorbike_2, 100000));
-//        shopItems.add(new ShopItem(3, R.drawable.item_motorbike_3, 10000));
-//        shopItems.add(new ShopItem(4, R.drawable.item_motorbike_4, 100000000));
-//        shopItems.add(new ShopItem(5, R.drawable.item_motorbike_5, 100000000));
-//        shopItems.add(new ShopItem(6, R.drawable.item_motorbike_6, 100000000));
-//        shopItems.add(new ShopItem(7, R.drawable.item_house_1, 100000000));
-//        shopItems.add(new ShopItem(8, R.drawable.item_house_2, 100000000));
-//        shopItems.add(new ShopItem(9, R.drawable.item_house_3, 100000000));
-//        shopItems.add(new ShopItem(10, R.drawable.item_ring_1, 100000000));
-//        shopItems.add(new ShopItem(11, R.drawable.item_ring_2, 100000000));
-//        shopItems.add(new ShopItem(12, R.drawable.item_ring_3, 100000000));
-//        shopItems.add(new ShopItem(13, R.drawable.item_car_1, 100000000));
-//        shopItems.add(new ShopItem(14, R.drawable.item_car_2, 100000000));
-//        shopItems.add(new ShopItem(15, R.drawable.item_car_3, 100000000));
-//        shopItems.add(new ShopItem(16, R.drawable.item_car_4, 100000000));
-//        shopItems.add(new ShopItem(17, R.drawable.item_car_5, 100000000));
-//        shopItems.add(new ShopItem(18, R.drawable.item_car_6, 100000000));
 
         //Hiển thị các item trong cửa hàng lên recyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(this, 3));
@@ -180,5 +174,24 @@ public class ShopActivity extends AppCompatActivity {
                     Log.d(TAG, "Ad was loaded.");
                 }
             });
+    }
+    private void setupCustomTabLayout() {
+        TabLayout tabLayout = findViewById(R.id.tabLayout);
+
+        // Loop through each tab and set custom view
+        for (int i = 0; i < tabLayout.getTabCount(); i++) {
+            TabLayout.Tab tab = tabLayout.getTabAt(i);
+            if (tab != null) {
+                tab.setCustomView(R.layout.custom_tab_layout);
+
+                // Get custom view of the tab
+                View tabView = tab.getCustomView();
+                if (tabView != null) {
+                    TextView textView = tabView.findViewById(R.id.tab_textview);
+                    // Customize text as per your requirement
+                    textView.setText(adapter.getPageTitle(i));
+                }
+            }
+        }
     }
 }

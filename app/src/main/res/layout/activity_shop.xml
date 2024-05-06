@@ -120,6 +120,19 @@
                     </LinearLayout>
                 </LinearLayout>
             </HorizontalScrollView>
+            <com.google.android.material.tabs.TabLayout
+                android:id="@+id/tabLayout"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:layout_alignParentBottom="true"
+                android:background="@color/transparent"
+                android:elevation="4dp"
+                android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            <studies.foxie.ailatrieuphu.CustomViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@id/tabLayout" />
             <ImageView
                 android:layout_width="match_parent"
                 android:layout_height="110dp"

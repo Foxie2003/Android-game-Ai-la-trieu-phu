@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/tab_textview"
+    android:layout_width="wrap_content"
+    android:layout_height="50dp"
+    android:gravity="center"
+    android:fontFamily="@font/abeezee_regular"
+    android:padding="10dp"
+    android:shadowColor="#10FEFF"
+    android:shadowDx="0.0"
+    android:shadowDy="0.0"
+    android:shadowRadius="16"
+    android:text="abc"
+    android:textAlignment="center"
+    android:textColor="#10FEFF"
+    android:textSize="20sp"
+    android:autoSizeTextType="uniform" />
