@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/layout_change_name_wrap"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#99000000">
+
+    <LinearLayout
+        android:id="@+id/layout_change_name_main"
+        android:layout_width="390dp"
+        android:layout_height="310dp"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_player_info_2"
+        android:orientation="vertical"
+        android:paddingLeft="60dp"
+        android:paddingTop="90dp"
+        android:paddingRight="60dp"
+        android:paddingBottom="90dp"
+        android:weightSum="2">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/anton_regular"
+                android:gravity="center"
+                android:shadowColor="#FFA6FF"
+                android:shadowDx="0.0"
+                android:shadowDy="0.0"
+                android:shadowRadius="16"
+                android:text="Nhập tên: "
+                android:textAlignment="center"
+                android:textAllCaps="true"
+                android:textColor="#FFA6FF"
+                android:textSize="19sp" />
+
+            <EditText
+                android:id="@+id/edt_change_name_name"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@drawable/bg_round_button_4"
+                android:paddingStart="30dp"
+                android:paddingEnd="30dp"
+                android:hint="Nhập tên"
+                android:maxLines="1"
+                android:maxLength="10"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="100">
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_change_name_change"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="40"
+                android:background="@drawable/bg_round_button_4"
+                android:fontFamily="@font/anton_regular"
+                android:gravity="center"
+                android:shadowColor="#FFA6FF"
+                android:shadowDx="0.0"
+                android:shadowDy="0.0"
+                android:shadowRadius="16"
+                android:text="Đổi tên"
+                android:textColor="#FFA6FF"
+                android:textSize="19sp" />
+
+            <View
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_weight="10" />
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_change_name_back"
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_weight="40"
+                android:background="@drawable/bg_round_button_4"
+                android:fontFamily="@font/anton_regular"
+                android:gravity="center"
+                android:maxLength="20"
+                android:maxLines="1"
+                android:shadowColor="#FFA6FF"
+                android:shadowDx="0.0"
+                android:shadowDy="0.0"
+                android:shadowRadius="16"
+                android:text="Hủy"
+                android:textColor="#FFA6FF"
+                android:textSize="19sp" />
+        </LinearLayout>
+    </LinearLayout>
+</RelativeLayout>

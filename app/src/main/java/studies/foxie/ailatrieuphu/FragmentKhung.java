@@ -16,7 +16,7 @@ import java.util.ArrayList;
 public class FragmentKhung extends Fragment {
     private DB database;
     private ArrayList<ShopItem> items;
-    private ShopItemAdapter shopItemAdapter;
+    private ShopItemAdapter2 shopItemAdapter;
     RecyclerView recyclerView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -36,11 +36,15 @@ public class FragmentKhung extends Fragment {
 
         //Hiển thị các item trong cửa hàng lên recyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        shopItemAdapter = new ShopItemAdapter(getContext(), items, new ShopItemAdapter.OnItemClickListener() {
+        shopItemAdapter = new ShopItemAdapter2(getContext(), items, new ShopItemAdapter2.OnItemClickListener() {
             @Override
             public void onBuyItemClick(ShopItem item) {
                 if(item.isBought()) {
-                    Toast.makeText(getContext(), "Vật phẩm này đã được mua", Toast.LENGTH_SHORT).show();
+                    if(database.getUsingFrameId() != item.getId()) {
+                        database.setUsingFrameId(item.getId());
+                        shopItemAdapter.setItemUsingId(database.getUsingFrameId());
+                        shopItemAdapter.notifyDataSetChanged();
+                    }
                 }
                 else {
                     if(database.minusMoney(item.getPrice())) {
@@ -57,6 +61,7 @@ public class FragmentKhung extends Fragment {
                 }
             }
         });
+        shopItemAdapter.setItemUsingId(database.getUsingFrameId());
         recyclerView.setAdapter(shopItemAdapter);
         return view;
     }

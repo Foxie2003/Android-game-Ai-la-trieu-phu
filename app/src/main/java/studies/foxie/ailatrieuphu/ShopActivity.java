@@ -68,6 +68,8 @@ public class ShopActivity extends AppCompatActivity {
         tvDiamond = findViewById(R.id.tv_shop_diamond);
         ivWatchAds = findViewById(R.id.iv_shop_watch_ads);
         btnBack = findViewById(R.id.ibtn_shop_back);
+        ViewPager viewPager = findViewById(R.id.vp_shop_viewpager);
+        TabLayout tabLayout = findViewById(R.id.tl_shop_tablayout);
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(ShopActivity.this.getApplicationContext());
         database.createDatabase();
@@ -75,8 +77,7 @@ public class ShopActivity extends AppCompatActivity {
         showPlayerMoney();
         //Hiện thị số kim cương đang có của người chơi
         showPlayerDiamond();
-        ViewPager viewPager = findViewById(R.id.viewPager);
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+
 
         adapter = new CategoryPagerAdapter(getSupportFragmentManager());
 
@@ -150,7 +151,7 @@ public class ShopActivity extends AppCompatActivity {
             });
     }
     private void setupCustomTabLayout() {
-        TabLayout tabLayout = findViewById(R.id.tabLayout);
+        TabLayout tabLayout = findViewById(R.id.tl_shop_tablayout);
 
         // Loop through each tab and set custom view
         for (int i = 0; i < tabLayout.getTabCount(); i++) {

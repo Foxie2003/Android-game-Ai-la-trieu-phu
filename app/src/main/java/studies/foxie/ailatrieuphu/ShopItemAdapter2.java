@@ -16,20 +16,30 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import java.util.ArrayList;
 
-public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ViewHolder> {
+public class ShopItemAdapter2 extends RecyclerView.Adapter<ShopItemAdapter2.ViewHolder> {
+    private static DB database;
     private ArrayList<ShopItem> shopItems;
     private LayoutInflater mInflater;
     private OnItemClickListener listener;
     private Context context;
+    private int itemUsingId = 0;
     public interface OnItemClickListener {
         void onBuyItemClick(ShopItem item);
     }
 
-    public ShopItemAdapter(Context context, ArrayList<ShopItem> shopItems, OnItemClickListener listener) {
+    public ShopItemAdapter2(Context context, ArrayList<ShopItem> shopItems, OnItemClickListener listener) {
         this.context = context;
         this.mInflater = LayoutInflater.from(context);
         this.shopItems = shopItems;
         this.listener = listener;
+    }
+
+    public int getItemUsingId() {
+        return itemUsingId;
+    }
+
+    public void setItemUsingId(int itemUsingId) {
+        this.itemUsingId = itemUsingId;
     }
 
     @NonNull
@@ -41,6 +51,8 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ViewHo
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
+        //Khởi tạo đối tượng database và khởi tạo database
+        database = new DB(context.getApplicationContext());
         if (shopItems != null) {
             // Lấy id của hình ảnh từ tên hình ảnh trong drawable
             int resourceId = context.getResources().getIdentifier(shopItems.get(position).getImage(), "drawable", context.getPackageName());
@@ -52,19 +64,6 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ViewHo
                 // Nếu không tìm thấy hình ảnh, xử lý theo nhu cầu của bạn, ví dụ đặt một hình ảnh mặc định
 //                holder.ivImage.setImageResource(R.drawable.default_image);
             }
-
-            holder.tvItemPrice.setText(DB.formatNumber(shopItems.get(position).getPrice()));
-            if (shopItems.get(position).isBought()) {
-                holder.btnItemBuy.setText("Đã mua");
-                holder.btnItemBuy.setTextColor(Color.parseColor("#38B6FF"));
-                holder.btnItemBuy.setShadowLayer(16, 0, 0, Color.parseColor("#38B6FF"));
-                holder.btnItemBuy.setEnabled(false); // Disable button if item is bought
-            } else {
-                holder.btnItemBuy.setText("Mua");
-                holder.btnItemBuy.setTextColor(Color.parseColor("#FFA6FF"));
-                holder.btnItemBuy.setShadowLayer(16, 0, 0, Color.parseColor("#FFA6FF"));
-                holder.btnItemBuy.setEnabled(true); // Enable button if item is not bought
-            }
             holder.btnItemBuy.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -73,6 +72,24 @@ public class ShopItemAdapter extends RecyclerView.Adapter<ShopItemAdapter.ViewHo
                     }
                 }
             });
+            if(shopItems.get(position).getPrice() != 0) {
+                holder.tvItemPrice.setText(DB.formatNumber(shopItems.get(position).getPrice()));
+            }
+            else {
+                holder.tvItemPrice.setVisibility(View.INVISIBLE);
+            }
+            if (shopItems.get(position).isBought()) {
+                holder.btnItemBuy.setText("Sử dụng");
+                holder.btnItemBuy.setTextColor(Color.parseColor("#38B6FF"));
+                holder.btnItemBuy.setShadowLayer(16, 0, 0, Color.parseColor("#38B6FF"));
+                if(itemUsingId == shopItems.get(position).getId()) {
+                    holder.btnItemBuy.setText("Đang dùng");
+                }
+            } else {
+                holder.btnItemBuy.setText("Mua");
+                holder.btnItemBuy.setTextColor(Color.parseColor("#FFA6FF"));
+                holder.btnItemBuy.setShadowLayer(16, 0, 0, Color.parseColor("#FFA6FF"));
+            }
         }
     }
 

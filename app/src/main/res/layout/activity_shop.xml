@@ -121,7 +121,7 @@
                 </LinearLayout>
             </HorizontalScrollView>
             <com.google.android.material.tabs.TabLayout
-                android:id="@+id/tabLayout"
+                android:id="@+id/tl_shop_tablayout"
                 android:layout_width="match_parent"
                 android:layout_height="60dp"
                 android:layout_alignParentBottom="true"
@@ -129,10 +129,10 @@
                 android:elevation="4dp"
                 android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
             <studies.foxie.ailatrieuphu.CustomViewPager
-                android:id="@+id/viewPager"
+                android:id="@+id/vp_shop_viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/tabLayout" />
+                android:layout_above="@id/tl_shop_tablayout" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
     <RelativeLayout

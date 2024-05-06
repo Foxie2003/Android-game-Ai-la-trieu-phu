@@ -8,6 +8,7 @@ import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -49,7 +50,7 @@ public class MainActivity extends AppCompatActivity {
     private DB database;
     FirebaseAuth auth;
     private SoundManager backgroundSoundManager, soundEffectManager;
-    private TextView tvMoney, tvDiamond;
+    private TextView tvMoney, tvDiamond, tvName;
     private ImageView ivAvatar, ivMainShop, ivSettings, ivExit;
     private ImageButton ibtnPlay;
     SharedPreferences prefs;
@@ -76,6 +77,7 @@ public class MainActivity extends AppCompatActivity {
         ivMainShop = findViewById(R.id.iv_main_shop);
         ivSettings = findViewById(R.id.iv_main_settings);
         ivExit = findViewById(R.id.iv_main_exit);
+        tvName = findViewById(R.id.tv_main_player_name);
 
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(MainActivity.this.getApplicationContext());
@@ -108,6 +110,8 @@ public class MainActivity extends AppCompatActivity {
         showPlayerMoney();
         //Hiện thị số kim cương đang có của người chơi
         showPlayerDiamond();
+        showAvatar();
+        tvName.setText(database.getPlayerName());
         //Bắt sự kiện khi ấn nút "bắt đầu"
         ibtnPlay.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -133,7 +137,8 @@ public class MainActivity extends AppCompatActivity {
         ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                showPlayerInfoDialog();
+//                showPlayerInfoDialog();
+                startActivity(new Intent(MainActivity.this, ActivityPlayerInfo.class));
             }
         });
         //Bắt sự kiện khi ấn nút "cài đặt"
@@ -188,6 +193,8 @@ public class MainActivity extends AppCompatActivity {
         }
         showPlayerMoney();
         showPlayerDiamond();
+        showAvatar();
+        tvName.setText(database.getPlayerName());
     }
 
     //Khi activity có sự thay đổi về focus
@@ -409,5 +416,37 @@ public class MainActivity extends AppCompatActivity {
         //Áp dụng animation cho chữ
         Animation growingLight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.growing_light);
         tvClose.startAnimation(growingLight);
+    }
+    public void showAvatar() {
+        ArrayList<ShopItem> avatars = database.getItemsByCategory(2);
+        ArrayList<ShopItem> frames = database.getItemsByCategory(3);
+        avatars.forEach(item -> {
+            if(item.getId() == database.getUsingAvatarId()) {
+                // Lấy id của hình ảnh từ tên hình ảnh trong drawable
+                int resourceId = MainActivity.this.getResources().getIdentifier(item.getImage(), "drawable", MainActivity.this.getPackageName());
+                // Kiểm tra xem id của hình ảnh có hợp lệ không
+                if (resourceId != 0) {
+                    // Nếu id hợp lệ, đặt hình ảnh vào ImageView
+                    ivAvatar.setImageResource(resourceId);
+                } else {
+                    // Nếu không tìm thấy hình ảnh, xử lý theo nhu cầu của bạn, ví dụ đặt một hình ảnh mặc định
+                    //                holder.ivImage.setImageResource(R.drawable.default_image);
+                }
+            }
+        });
+        frames.forEach(item -> {
+            if(item.getId() == database.getUsingFrameId()) {
+                // Lấy id của hình ảnh từ tên hình ảnh trong drawable
+                int resourceId = MainActivity.this.getResources().getIdentifier(item.getImage(), "drawable", MainActivity.this.getPackageName());
+                // Kiểm tra xem id của hình ảnh có hợp lệ không
+                if (resourceId != 0) {
+                    // Nếu id hợp lệ, đặt hình ảnh vào ImageView
+                    ivAvatar.setBackgroundResource(resourceId);
+                } else {
+                    // Nếu không tìm thấy hình ảnh, xử lý theo nhu cầu của bạn, ví dụ đặt một hình ảnh mặc định
+                    //                holder.ivImage.setImageResource(R.drawable.default_image);
+                }
+            }
+        });
     }
 }

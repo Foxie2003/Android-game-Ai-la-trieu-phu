@@ -20,68 +20,70 @@ public class DB {
         Cursor playerInfoCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerInfo'");
         if (playerInfoCursor == null || playerInfoCursor.getCount() <= 0) {
             db.QueryData("CREATE TABLE IF NOT EXISTS PlayerInfo (PlayerName NVARCHAR(20), AvatarId INTEGER, FrameId INTEGER, Money Integer, Diamond Integer, HighestQuestionNumber Integer, AnsweredQuestion Integer, CorrectAnsweredQuestion Integer)");
-            db.QueryData("INSERT INTO PlayerInfo VALUES ('Khách', 1, 1, 12345678, 100, 0, 0, 0)");
+            db.QueryData("INSERT INTO PlayerInfo VALUES ('Khách', 1, 16, 12345678, 100, 0, 0, 0)");
         }
         //Tạo bảng ItemCategory nếu nó chưa tồn tại
         Cursor itemCategoryCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='ItemCategory'");
         if (itemCategoryCursor == null || itemCategoryCursor.getCount() <= 0) {
-            db.QueryData("CREATE TABLE IF NOT EXISTS ItemCategoryCursor (id INTEGER PRIMARY KEY AUTOINCREMENT, categoryName NVARCHAR(20))");
-            db.QueryData("INSERT INTO ItemCategoryCursor VALUES (null, 'Tài sản')");
-            db.QueryData("INSERT INTO ItemCategoryCursor VALUES (null, 'Avatar')");
-            db.QueryData("INSERT INTO ItemCategoryCursor VALUES (null, 'Khung')");
+            db.QueryData("CREATE TABLE IF NOT EXISTS ItemCategory (id INTEGER PRIMARY KEY AUTOINCREMENT, categoryName NVARCHAR(20))");
+            db.QueryData("INSERT INTO ItemCategory VALUES (null, 'Tài sản')");
+            db.QueryData("INSERT INTO ItemCategory VALUES (null, 'Avatar')");
+            db.QueryData("INSERT INTO ItemCategory VALUES (null, 'Khung')");
         }
         //Tạo bảng Items nếu nó chưa tồn tại
         Cursor itemsCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='Items'");
         if (itemsCursor == null || itemsCursor.getCount() <= 0) {
             db.QueryData("CREATE TABLE IF NOT EXISTS Items (id INTEGER PRIMARY KEY AUTOINCREMENT, categoryId INTEGER, name NVARCHAR(20), price INTEGER, image VARCHAR, isBought INTEGER, FOREIGN KEY (categoryId) REFERENCES ItemCategory(id))");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt3', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt4', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt5', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt6', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt7', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt8', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt9', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt10', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt11', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt12', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt13', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt14', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt15', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 0, 'avt1', 1)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 5000000, 'avt2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 10000000, 'avt3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 15000000, 'avt4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 20000000, 'avt5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 25000000, 'avt6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 30000000, 'avt7', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 35000000, 'avt8', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 40000000, 'avt9', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 45000000, 'avt10', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 50000000, 'avt11', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 55000000, 'avt12', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 60000000, 'avt13', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 65000000, 'avt14', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 2, 'Mặc định', 70000000, 'avt15', 0)");
 
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung3', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung4', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung5', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung6', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung7', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung8', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung9', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung10', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung11', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung12', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung13', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung14', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung15', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 0, 'khung1', 1)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 5000000, 'khung2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 10000000, 'khung3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 15000000, 'khung4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 20000000, 'khung5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 25000000, 'khung6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 30000000, 'khung7', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 35000000, 'khung8', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 40000000, 'khung9', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 45000000, 'khung10', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 50000000, 'khung11', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 55000000, 'khung12', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 60000000, 'khung13', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 65000000, 'khung14', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 3, 'Mặc định', 70000000, 'khung15', 0)");
 
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 1',1000000, 'item_motorbike_1', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 2',1000000, 'item_motorbike_2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 3',1000000, 'item_motorbike_3', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 4',1000000, 'item_motorbike_4', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 5',1000000, 'item_motorbike_5', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 6',1000000, 'item_motorbike_6', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 1',1000000, 'item_car_1', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 2',1000000, 'item_car_2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 3',1000000, 'item_car_3', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 4',1000000, 'item_car_4', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 5',1000000, 'item_car_5', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 6',1000000, 'item_car_6', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 1',1000000, 'item_ring_1', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 2',1000000, 'item_ring_2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 3',1000000, 'item_ring_3', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 1',1000000, 'item_house_1', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 2',1000000, 'item_house_2', 0)");
-            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 3',1000000, 'item_house_3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 1',15000000, 'item_motorbike_1', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 2',20000000, 'item_motorbike_2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 3',100000000, 'item_motorbike_3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 4',200000000, 'item_motorbike_4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 5',300000000, 'item_motorbike_5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe máy 6',500000000, 'item_motorbike_6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 1',600000000, 'item_car_1', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 2',800000000, 'item_car_2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 3',1000000000, 'item_car_3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 4',10000000000, 'item_car_4', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 5',15000000000, 'item_car_5', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Xe hơi 6',20000000000, 'item_car_6', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 1',10000000, 'item_ring_1', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 2',100000000, 'item_ring_2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhẫn 3',200000000, 'item_ring_3', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 1',500000000, 'item_house_1', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 2',1000000000, 'item_house_2', 0)");
+            db.QueryData("INSERT INTO Items VALUES (null, 1, 'Nhà 3',10000000000, 'item_house_3', 0)");
         }
         //Tạo bảng Questions nếu nó chưa tồn tại
         Cursor QuestionsCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='Questions'");
@@ -259,6 +261,18 @@ public class DB {
             return String.format("%.2f%s", formattedNumber, suffixes[suffixIndex]);
         }
     }
+    public String getPlayerName() {
+        //Lấy bản ghi đầu tiên của cột Diamond trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT PlayerName FROM PlayerInfo LIMIT 1");
+        String name = "";
+        if (data != null && data.moveToFirst()) {
+            name = data.getString(0);
+        }
+        return name;
+    }
+    public void setPlayerName(String name) {
+        db.QueryData("UPDATE PlayerInfo SET PlayerName = '" + name + "'");
+    }
     public long getMoney() {
         //Lấy bản ghi đầu tiên của cột Money trong bảng PlayerInfo
         Cursor data = db.GetData("SELECT Money FROM PlayerInfo LIMIT 1");
@@ -406,7 +420,7 @@ public class DB {
                 item.setId(data.getInt(0));
                 item.setCategoryId(data.getInt(1));
                 item.setName(data.getString(2));
-                item.setPrice(data.getInt(3));
+                item.setPrice(data.getLong(3));
                 item.setImage(data.getString(4));
                 item.setBought((data.getInt(5) == 1));
 
@@ -420,7 +434,78 @@ public class DB {
 
         return items;
     }
+    public ArrayList<ShopItem> getBoughtItemsByCategory(int categoryId) {
+        ArrayList<ShopItem> items = new ArrayList<>();
 
+        // Lấy tất cả bản ghi trong bảng Items với categoryId
+        Cursor data = db.GetData("SELECT * FROM Items WHERE categoryId = " + categoryId + " AND isBought = 1");
+
+        if (data != null && data.moveToFirst()) {
+            do {
+                // Tạo một đối tượng ShopItem từ dữ liệu Cursor
+                ShopItem item = new ShopItem();
+                item.setId(data.getInt(0));
+                item.setCategoryId(data.getInt(1));
+                item.setName(data.getString(2));
+                item.setPrice(data.getLong(3));
+                item.setImage(data.getString(4));
+                item.setBought((data.getInt(5) == 1));
+
+                // Thêm đối tượng ShopItem vào ArrayList
+                items.add(item);
+            } while (data.moveToNext());
+
+            // Đóng Cursor sau khi sử dụng
+            data.close();
+        }
+
+        return items;
+    }
+    public int getUsingAvatarId() {
+        //Lấy bản ghi đầu tiên của cột AvatarId trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT AvatarId FROM PlayerInfo LIMIT 1");
+        int avatarId = 0;
+        if (data != null && data.moveToFirst()) {
+            avatarId = data.getInt(0);
+        }
+        return avatarId;
+    }
+    public void setUsingAvatarId(int avatarId) {
+        db.QueryData("UPDATE PlayerInfo SET AvatarId = " + avatarId);
+    }
+    public int getUsingFrameId() {
+        //Lấy bản ghi đầu tiên của cột FrameId trong bảng PlayerInfo
+        Cursor data = db.GetData("SELECT FrameId FROM PlayerInfo LIMIT 1");
+        int avatarId = 0;
+        if (data != null && data.moveToFirst()) {
+            avatarId = data.getInt(0);
+        }
+        return avatarId;
+    }
+    public void setUsingFrameId(int frameId) {
+        db.QueryData("UPDATE PlayerInfo SET FrameId = " + frameId);
+    }
+    public PlayerInfo getPlayerInfo() {
+        // Lấy dữ liệu từ CSDL
+        Cursor playerInfoCursor = db.GetData("SELECT * FROM PlayerInfo LIMIT 1"); // Lấy dữ liệu của người chơi có tên là 'Khách'
+
+        if (playerInfoCursor != null && playerInfoCursor.moveToFirst()) {
+            // Lấy thông tin từ Cursor và tạo một đối tượng PlayerInfo
+            String playerName = playerInfoCursor.getString(0);
+            int avatarId = playerInfoCursor.getInt(1);
+            int frameId = playerInfoCursor.getInt(2);
+            int money = playerInfoCursor.getInt(3);
+            int diamond = playerInfoCursor.getInt(4);
+            int highestQuestionNumber = playerInfoCursor.getInt(5);
+            int answeredQuestion = playerInfoCursor.getInt(6);
+            int correctAnsweredQuestion = playerInfoCursor.getInt(7);
+
+            return new PlayerInfo(playerName, avatarId, frameId, money, diamond, highestQuestionNumber, answeredQuestion, correctAnsweredQuestion);
+
+        } else {
+            return null;
+        }
+    }
 }
 class DataBaseHelper extends SQLiteOpenHelper {
     public DataBaseHelper(@Nullable Context context, @Nullable String name, @Nullable SQLiteDatabase.CursorFactory factory, int version) {

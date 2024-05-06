@@ -13,10 +13,10 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class FragmentAvatar extends Fragment {
+public class FragmentTaiSan2 extends Fragment {
     private DB database;
     private ArrayList<ShopItem> items;
-    private ShopItemAdapter2 shopItemAdapter;
+    private ShopItemAdapter shopItemAdapter;
     RecyclerView recyclerView;
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -27,24 +27,20 @@ public class FragmentAvatar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_avatar, container, false);
-        recyclerView = view.findViewById(R.id.rv_avatar);
+        View view = inflater.inflate(R.layout.fragment_tai_san, container, false);
+        recyclerView = view.findViewById(R.id.rv_tai_san);
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(getContext());
         //Khởi tạo ArrayList chứa dữ liệu của những item trong cửa hàng
-        items = database.getItemsByCategory(2);
+        items = database.getBoughtItemsByCategory(1);
 
         //Hiển thị các item trong cửa hàng lên recyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
-        shopItemAdapter = new ShopItemAdapter2(getContext(), items, new ShopItemAdapter2.OnItemClickListener() {
+        shopItemAdapter = new ShopItemAdapter(getContext(), items, new ShopItemAdapter.OnItemClickListener() {
             @Override
             public void onBuyItemClick(ShopItem item) {
                 if(item.isBought()) {
-                    if(database.getUsingAvatarId() != item.getId()) {
-                        database.setUsingAvatarId(item.getId());
-                        shopItemAdapter.setItemUsingId(database.getUsingAvatarId());
-                        shopItemAdapter.notifyDataSetChanged();
-                    }
+                    Toast.makeText(getContext(), "Vật phẩm này đã được mua", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     if(database.minusMoney(item.getPrice())) {
@@ -61,7 +57,6 @@ public class FragmentAvatar extends Fragment {
                 }
             }
         });
-        shopItemAdapter.setItemUsingId(database.getUsingAvatarId());
         recyclerView.setAdapter(shopItemAdapter);
         return view;
     }

@@ -13,7 +13,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
-public class FragmentAvatar extends Fragment {
+public class FragmentKhung2 extends Fragment {
     private DB database;
     private ArrayList<ShopItem> items;
     private ShopItemAdapter2 shopItemAdapter;
@@ -27,12 +27,12 @@ public class FragmentAvatar extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_avatar, container, false);
-        recyclerView = view.findViewById(R.id.rv_avatar);
+        View view = inflater.inflate(R.layout.fragment_khung, container, false);
+        recyclerView = view.findViewById(R.id.rv_khung);
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(getContext());
         //Khởi tạo ArrayList chứa dữ liệu của những item trong cửa hàng
-        items = database.getItemsByCategory(2);
+        items = database.getBoughtItemsByCategory(3);
 
         //Hiển thị các item trong cửa hàng lên recyclerView
         recyclerView.setLayoutManager(new GridLayoutManager(getContext(), 3));
@@ -40,10 +40,11 @@ public class FragmentAvatar extends Fragment {
             @Override
             public void onBuyItemClick(ShopItem item) {
                 if(item.isBought()) {
-                    if(database.getUsingAvatarId() != item.getId()) {
-                        database.setUsingAvatarId(item.getId());
-                        shopItemAdapter.setItemUsingId(database.getUsingAvatarId());
+                    if(database.getUsingFrameId() != item.getId()) {
+                        database.setUsingFrameId(item.getId());
+                        shopItemAdapter.setItemUsingId(database.getUsingFrameId());
                         shopItemAdapter.notifyDataSetChanged();
+                        ActivityPlayerInfo.showAvatar(getContext());
                     }
                 }
                 else {
@@ -61,7 +62,7 @@ public class FragmentAvatar extends Fragment {
                 }
             }
         });
-        shopItemAdapter.setItemUsingId(database.getUsingAvatarId());
+        shopItemAdapter.setItemUsingId(database.getUsingFrameId());
         recyclerView.setAdapter(shopItemAdapter);
         return view;
     }
