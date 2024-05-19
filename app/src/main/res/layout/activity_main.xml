@@ -14,6 +14,7 @@
         android:layout_weight="40">
 
         <ImageView
+            android:id="@+id/iv_main_logo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
@@ -82,6 +83,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"/>
             <ImageView
+                android:id="@+id/iv_main_add_money"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:padding="2dp"
@@ -117,6 +119,7 @@
                 android:textColor="@color/white"
                 android:textStyle="bold"/>
             <ImageView
+                android:id="@+id/iv_main_add_diamond"
                 android:layout_width="30dp"
                 android:layout_height="30dp"
                 android:padding="2dp"

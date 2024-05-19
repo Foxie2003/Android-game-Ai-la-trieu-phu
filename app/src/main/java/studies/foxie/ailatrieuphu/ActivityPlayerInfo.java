@@ -6,7 +6,9 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.app.Dialog;
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
@@ -31,7 +33,7 @@ public class ActivityPlayerInfo extends AppCompatActivity {
     private static ImageView ivAvatar;
     private TextView tvName, tvMoney, tvDiamond, tvTaiSan, tvCorrectQuestion;
     private ImageButton btnBack;
-    private AppCompatButton btnChangeName;
+    private AppCompatButton btnChangeName, btnShare;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,6 +53,7 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         tvCorrectQuestion = findViewById(R.id.tv_player_info_correct_question);
         btnBack = findViewById(R.id.ibtn_player_info_back);
         btnChangeName = findViewById(R.id.btn_player_info_change_name);
+        btnShare = findViewById(R.id.btn_player_info_change_share);
 
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(ActivityPlayerInfo.this.getApplicationContext());
@@ -82,6 +85,12 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         });
         showAvatar(this);
         showPlayerInfo();
+        btnShare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ShareLinkApp();
+            }
+        });
     }
     //Hàm ẩn thanh công cụ navigation bar
     private void hideNavigationBar() {
@@ -178,9 +187,14 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         btnChangeName.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                database.setPlayerName(edtName.getText().toString());
-                showPlayerInfo();
-                Toast.makeText(ActivityPlayerInfo.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
+                if(edtName.getText().toString().trim().isEmpty()) {
+                    Toast.makeText(ActivityPlayerInfo.this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
+                }
+                else {
+                    database.setPlayerName(edtName.getText().toString());
+                    showPlayerInfo();
+                    Toast.makeText(ActivityPlayerInfo.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
+                }
             }
         });
         //Khi bấm chữ trở về thì đóng dialog
@@ -193,5 +207,22 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         });
 
         dialog.show();
+    }
+    private void ShareLinkApp(){
+        final Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+        // Thay đổi thành URI của liên kết bạn muốn chia sẻ
+        Uri uri = Uri.parse("https://drive.google.com/file/d/1QEVftkdZeqsZY1SI2PUKyQ3hPVmCIuSl/view?usp=sharinga");
+
+        // Đặt nội dung của Intent thành liên kết
+        intent.putExtra(Intent.EXTRA_TEXT, uri.toString());
+
+        // Thêm cờ cho phép ứng dụng đính kèm xử lý dữ liệu từ URI được cung cấp
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+
+        // Đặt loại dữ liệu của Intent thành "text/plain"
+        intent.setType("text/plain");
+        startActivity(Intent.createChooser(intent,"Share to..."));
     }
 }

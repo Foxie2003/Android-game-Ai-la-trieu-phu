@@ -905,44 +905,55 @@ public class PlayActivity extends AppCompatActivity {
     }
     //Hàm xử lý trợ giúp 5050
     public void lifeLine5050() {
-        //Thay đổi src của trợ giúp khi đã được dùng
-        iv5050.setImageResource(R.drawable.button_5050_used);
-        //Phát âm thanh chọn trợ giúp 50 50
-        soundManager.playSound(R.raw.mc_select_50_50, volumnSound);
-        soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
-            @Override
-            public void onCompletion(MediaPlayer mp) {
-                soundManager.removeOnCompletionListener();
-                //Phát âm thanh bỏ đi 2 phương án sai
-                soundManager.playSound(R.raw.mc_50_50, volumnSound);
-                // Tạo một Handler để định thời gian trễ
-                new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        for (int i = 0; i < 2;) {
-                            // Khởi tạo một đối tượng của lớp Random
-                            Random random = new Random();
-                            // Đặt giá trị tối thiểu và tối đa
-                            int max = 4;
-                            int min = 1;
-                            // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
-                            int randomNumber = random.nextInt(max - min + 1) + min;
-                            //Nếu random ra đáp án sai
-                            if(randomNumber != question.getCorrectAnswer()) {
-                                AppCompatButton answerButton = answerButtons.get(randomNumber - 1);
-                                //Nếu đáp án đó chưa được loại bỏ
-                                if (answerButton.isEnabled()) {
-                                    //Loại bỏ đáp án
-                                    answerButton.setText(null);
-                                    answerButton.setEnabled(false);
-                                    i++;
+        int button = 0;
+        for (int i = 0; i < answerButtons.size(); i++) {
+            if(!answerButtons.get(i).isEnabled()) {
+                button++;
+            }
+        }
+        if(button < 2) {
+            //Thay đổi src của trợ giúp khi đã được dùng
+            iv5050.setImageResource(R.drawable.button_5050_used);
+            //Phát âm thanh chọn trợ giúp 50 50
+            soundManager.playSound(R.raw.mc_select_50_50, volumnSound);
+            soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                @Override
+                public void onCompletion(MediaPlayer mp) {
+                    soundManager.removeOnCompletionListener();
+                    //Phát âm thanh bỏ đi 2 phương án sai
+                    soundManager.playSound(R.raw.mc_50_50, volumnSound);
+                    // Tạo một Handler để định thời gian trễ
+                    new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
+                        @Override
+                        public void run() {
+                            for (int i = 0; i < 2;) {
+                                // Khởi tạo một đối tượng của lớp Random
+                                Random random = new Random();
+                                // Đặt giá trị tối thiểu và tối đa
+                                int max = 4;
+                                int min = 1;
+                                // Tạo số nguyên ngẫu nhiên trong khoảng từ min đến max
+                                int randomNumber = random.nextInt(max - min + 1) + min;
+                                //Nếu random ra đáp án sai
+                                if(randomNumber != question.getCorrectAnswer()) {
+                                    AppCompatButton answerButton = answerButtons.get(randomNumber - 1);
+                                    //Nếu đáp án đó chưa được loại bỏ
+                                    if (answerButton.isEnabled()) {
+                                        //Loại bỏ đáp án
+                                        answerButton.setText(null);
+                                        answerButton.setEnabled(false);
+                                        i++;
+                                    }
                                 }
                             }
                         }
-                    }
-                }, 2900);
-            }
-        });
+                    }, 2900);
+                }
+            });
+        }
+        else {
+            Toast.makeText(this, "Bạn đã dùng trợ giúp 50:50 cho câu này rồi!", Toast.LENGTH_SHORT).show();
+        }
     }
     //Hàm xử lý trợ giúp hỏi ý kiến khán giả
     public void lifeLineAskAudience() {
@@ -1241,11 +1252,15 @@ public class PlayActivity extends AppCompatActivity {
         //Ẩn thanh công cụ
         gameoverDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         LinearLayout layoutMain = gameoverDialog.findViewById(R.id.layout_gameover_main);
+        RelativeLayout layoutText = gameoverDialog.findViewById(R.id.layout_gameover_text);
         TextView tvPrizeResult = gameoverDialog.findViewById(R.id.tv_gameover_prize);
         TextView tvQuestionNumber = gameoverDialog.findViewById(R.id.tv_gameover_question_number);
         TextView tvHighQN = gameoverDialog.findViewById(R.id.tv_gameover_high_question_number);
         AppCompatButton btnGoHome = gameoverDialog.findViewById(R.id.btn_gameover_home);
         AppCompatButton btnShare = gameoverDialog.findViewById(R.id.btn_gameover_share);
+        //Áp dụng animation cho chữ
+        Animation growingLight = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.growing_light);
+        layoutText.startAnimation(growingLight);
         //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
         database.updateHighestQuestionNumber(question.getQuestionNumber() - 1);
         //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng
@@ -1340,11 +1355,15 @@ public class PlayActivity extends AppCompatActivity {
         //Ẩn thanh công cụ
         winDialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         LinearLayout layoutMain = winDialog.findViewById(R.id.layout_win_main);
+        RelativeLayout layoutText = winDialog.findViewById(R.id.layout_gameover_text);
         TextView tvPrizeResult = winDialog.findViewById(R.id.tv_win_prize);
         TextView tvQuestionNumber = winDialog.findViewById(R.id.tv_win_question_number);
         TextView tvHighQN = winDialog.findViewById(R.id.tv_win_high_question_number);
         AppCompatButton btnGoHome = winDialog.findViewById(R.id.btn_win_home);
         AppCompatButton btnShare = winDialog.findViewById(R.id.btn_win_share);
+        //Áp dụng animation cho chữ
+        Animation growingLight = AnimationUtils.loadAnimation(PlayActivity.this, R.anim.growing_light);
+        layoutText.startAnimation(growingLight);
         //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
         database.updateHighestQuestionNumber(question.getQuestionNumber());
         //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng

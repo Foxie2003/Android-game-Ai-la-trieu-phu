@@ -51,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private SoundManager backgroundSoundManager, soundEffectManager;
     private TextView tvMoney, tvDiamond, tvName;
-    private ImageView ivAvatar, ivMainShop, ivSettings, ivExit;
+    private ImageView ivLogo, ivAddMoney, ivAddDiamond, ivAvatar, ivMainShop, ivSettings, ivExit;
     private ImageButton ibtnPlay;
     SharedPreferences prefs;
     private boolean music;
@@ -78,6 +78,9 @@ public class MainActivity extends AppCompatActivity {
         ivSettings = findViewById(R.id.iv_main_settings);
         ivExit = findViewById(R.id.iv_main_exit);
         tvName = findViewById(R.id.tv_main_player_name);
+        ivLogo = findViewById(R.id.iv_main_logo);
+        ivAddMoney = findViewById(R.id.iv_main_add_money);
+        ivAddDiamond = findViewById(R.id.iv_main_add_diamond);
 
         //Khởi tạo đối tượng database và khởi tạo database
         database = new DB(MainActivity.this.getApplicationContext());
@@ -134,6 +137,18 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(new Intent(MainActivity.this, ShopActivity.class));
             }
         });
+        ivAddMoney.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ShopActivity.class));
+            }
+        });
+        ivAddDiamond.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, ShopActivity.class));
+            }
+        });
         ivAvatar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -155,6 +170,9 @@ public class MainActivity extends AppCompatActivity {
                 showExitDialog();
             }
         });
+        //Áp dụng animation cho chữ
+        Animation growingLight = AnimationUtils.loadAnimation(MainActivity.this, R.anim.growing_light);
+        ivLogo.startAnimation(growingLight);
     }
     @Override
     protected void onDestroy() {

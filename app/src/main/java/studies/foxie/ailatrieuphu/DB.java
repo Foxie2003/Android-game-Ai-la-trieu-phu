@@ -20,7 +20,7 @@ public class DB {
         Cursor playerInfoCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='PlayerInfo'");
         if (playerInfoCursor == null || playerInfoCursor.getCount() <= 0) {
             db.QueryData("CREATE TABLE IF NOT EXISTS PlayerInfo (PlayerName NVARCHAR(20), AvatarId INTEGER, FrameId INTEGER, Money Integer, Diamond Integer, HighestQuestionNumber Integer, AnsweredQuestion Integer, CorrectAnsweredQuestion Integer)");
-            db.QueryData("INSERT INTO PlayerInfo VALUES ('Khách', 1, 16, 12345678, 100, 0, 0, 0)");
+            db.QueryData("INSERT INTO PlayerInfo VALUES ('Khách', 1, 16, 10000000, 500, 0, 0, 0)");
         }
         //Tạo bảng ItemCategory nếu nó chưa tồn tại
         Cursor itemCategoryCursor = db.GetData("SELECT name FROM sqlite_master WHERE type='table' AND name='ItemCategory'");
