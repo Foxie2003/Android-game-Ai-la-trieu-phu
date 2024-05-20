@@ -4,14 +4,14 @@ public class PlayerInfo {
     private String playerName;
     private int avatarId;
     private int frameId;
-    private int money;
-    private int diamond;
+    private long money;
+    private long diamond;
     private int highestQuestionNumber;
     private int answeredQuestion;
     private int correctAnsweredQuestion;
 
     // Constructor
-    public PlayerInfo(String playerName, int avatarId, int frameId, int money, int diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion) {
+    public PlayerInfo(String playerName, int avatarId, int frameId, long money, long diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion) {
         this.playerName = playerName;
         this.avatarId = avatarId;
         this.frameId = frameId;
@@ -47,19 +47,19 @@ public class PlayerInfo {
         this.frameId = frameId;
     }
 
-    public int getMoney() {
+    public long getMoney() {
         return money;
     }
 
-    public void setMoney(int money) {
+    public void setMoney(long money) {
         this.money = money;
     }
 
-    public int getDiamond() {
+    public long getDiamond() {
         return diamond;
     }
 
-    public void setDiamond(int diamond) {
+    public void setDiamond(long diamond) {
         this.diamond = diamond;
     }
 

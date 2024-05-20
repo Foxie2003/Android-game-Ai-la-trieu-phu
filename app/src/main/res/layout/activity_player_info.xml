@@ -231,7 +231,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="150"
+                        android:weightSum="200"
                         android:gravity="center">
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_player_info_change_name"
@@ -272,7 +272,7 @@
                             android:layout_height="0dp"
                             android:layout_weight="10"/>
                         <androidx.appcompat.widget.AppCompatButton
-                            android:id="@+id/btn_player_info_login"
+                            android:id="@+id/btn_player_info_sign_in"
                             android:layout_width="0dp"
                             android:layout_height="60dp"
                             android:layout_weight="40"
@@ -282,7 +282,26 @@
                             android:shadowDx="0.0"
                             android:shadowDy="0.0"
                             android:shadowRadius="16"
-                            android:text="Chia sẻ"
+                            android:text="Đăng nhập"
+                            android:textColor="#FFA6FF"
+                            android:textSize="19sp"
+                            android:background="@drawable/bg_round_button_4"/>
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="0dp"
+                            android:layout_weight="10"/>
+                        <androidx.appcompat.widget.AppCompatButton
+                            android:id="@+id/btn_player_info_sign_out"
+                            android:layout_width="0dp"
+                            android:layout_height="60dp"
+                            android:layout_weight="40"
+                            android:fontFamily="@font/anton_regular"
+                            android:gravity="center"
+                            android:shadowColor="#FFA6FF"
+                            android:shadowDx="0.0"
+                            android:shadowDy="0.0"
+                            android:shadowRadius="16"
+                            android:text="Đăng xuất"
                             android:textColor="#FFA6FF"
                             android:textSize="19sp"
                             android:background="@drawable/bg_round_button_4"/>
