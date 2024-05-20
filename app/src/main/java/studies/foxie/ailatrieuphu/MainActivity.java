@@ -1,28 +1,20 @@
 package studies.foxie.ailatrieuphu;
 
-import static androidx.constraintlayout.helper.widget.MotionEffect.TAG;
-
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
-import android.app.Activity;
 import android.app.Dialog;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
-import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
-import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -30,21 +22,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.android.gms.ads.AdRequest;
-import com.google.android.gms.ads.LoadAdError;
-import com.google.android.gms.ads.MobileAds;
-import com.google.android.gms.ads.OnUserEarnedRewardListener;
-import com.google.android.gms.ads.initialization.InitializationStatus;
-import com.google.android.gms.ads.initialization.OnInitializationCompleteListener;
-import com.google.android.gms.ads.rewarded.RewardItem;
-import com.google.android.gms.ads.rewarded.RewardedAd;
-import com.google.android.gms.ads.rewarded.RewardedAdLoadCallback;
-import com.google.android.gms.auth.api.identity.BeginSignInRequest;
 import com.google.firebase.auth.FirebaseAuth;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
     private DB database;
@@ -153,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 //                showPlayerInfoDialog();
-                startActivity(new Intent(MainActivity.this, ActivityPlayerInfo.class));
+                startActivity(new Intent(MainActivity.this, PlayerInfoActivity.class));
             }
         });
         //Bắt sự kiện khi ấn nút "cài đặt"

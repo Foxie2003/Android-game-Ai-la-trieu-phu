@@ -44,7 +44,7 @@ public class FragmentKhung2 extends Fragment {
                         database.setUsingFrameId(item.getId());
                         shopItemAdapter.setItemUsingId(database.getUsingFrameId());
                         shopItemAdapter.notifyDataSetChanged();
-                        ActivityPlayerInfo.showAvatar(getContext());
+                        PlayerInfoActivity.showAvatar(getContext());
                     }
                 }
                 else {

@@ -7,19 +7,14 @@ import androidx.viewpager.widget.ViewPager;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -27,7 +22,7 @@ import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 
-public class ActivityPlayerInfo extends AppCompatActivity {
+public class PlayerInfoActivity extends AppCompatActivity {
     private static DB database;
     private CategoryPagerAdapter adapter;
     private static ImageView ivAvatar;
@@ -53,10 +48,10 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         tvCorrectQuestion = findViewById(R.id.tv_player_info_correct_question);
         btnBack = findViewById(R.id.ibtn_player_info_back);
         btnChangeName = findViewById(R.id.btn_player_info_change_name);
-        btnShare = findViewById(R.id.btn_player_info_change_share);
+        btnShare = findViewById(R.id.btn_player_info_share);
 
         //Khởi tạo đối tượng database và khởi tạo database
-        database = new DB(ActivityPlayerInfo.this.getApplicationContext());
+        database = new DB(PlayerInfoActivity.this.getApplicationContext());
 
         ViewPager viewPager = findViewById(R.id.vp_player_info_viewpager);
         TabLayout tabLayout = findViewById(R.id.tl_player_info_tablayout);
@@ -173,7 +168,7 @@ public class ActivityPlayerInfo extends AppCompatActivity {
         tvCorrectQuestion.setText(DB.formatNumber(playerInfo.getCorrectAnsweredQuestion()));
     }
     private void showChangeNameDialog() {
-        Dialog dialog = new Dialog(ActivityPlayerInfo.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
+        Dialog dialog = new Dialog(PlayerInfoActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
         dialog.setContentView(R.layout.dialog_change_name);
         dialog.getWindow().getDecorView().setSystemUiVisibility( View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
@@ -188,12 +183,12 @@ public class ActivityPlayerInfo extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if(edtName.getText().toString().trim().isEmpty()) {
-                    Toast.makeText(ActivityPlayerInfo.this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlayerInfoActivity.this, "Vui lòng nhập tên", Toast.LENGTH_SHORT).show();
                 }
                 else {
                     database.setPlayerName(edtName.getText().toString());
                     showPlayerInfo();
-                    Toast.makeText(ActivityPlayerInfo.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(PlayerInfoActivity.this, "Đổi tên thành công", Toast.LENGTH_SHORT).show();
                 }
             }
         });
