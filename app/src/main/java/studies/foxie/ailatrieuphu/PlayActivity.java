@@ -91,7 +91,7 @@ public class PlayActivity extends AppCompatActivity {
             answerWrongSounds, helpAnswerSounds, helpAnswerSounds2, helpAnswerSounds3;
     private ArrayList<AppCompatButton> answerButtons;
     private ArrayList<TextView> questionNumberTextViews;
-    private ArrayList<Integer> prizeMoneys = new ArrayList<>(Arrays.asList(200000, 400000, 600000,
+    private final ArrayList<Integer> prizeMoneys = new ArrayList<>(Arrays.asList(200000, 400000, 600000,
             1000000, 2000000, 3000000, 6000000, 10000000, 14000000, 22000000, 30000000, 40000000, 60000000, 85000000, 150000000));
     private int prizeResult = 0;
     private GradientTextView tvCountdown;
@@ -721,6 +721,23 @@ public class PlayActivity extends AppCompatActivity {
                 tvQuestion.setText(question.getQuestion());
                 //Đọc nội dung câu hỏi
                 soundManager.playSound(getRawId(question.getAudioFileName()), volumnSound);
+                soundManager.setOnCompletionListener(new MediaPlayer.OnCompletionListener() {
+                    @Override
+                    public void onCompletion(MediaPlayer mp) {
+                        //Sau khi đọc xong câu hỏi thì phát nhạc nền
+                        soundManager.removeOnCompletionListener();
+                        //Theo mỗi cấp độ khác nhau thì nhạc nền cũng khác nhau
+                        if(question.getQuestionNumber() <= 5) {
+                            soundManager.playSoundLoop(R.raw.bg_music_level3, volumnMusic);
+                        }
+                        else if(question.getQuestionNumber() <= 10) {
+                            soundManager.playSoundLoop(R.raw.bg_music_level2, volumnMusic);
+                        }
+                        else {
+                            soundManager.playSoundLoop(R.raw.bg_music_level3, volumnMusic);
+                        }
+                    }
+                });
                 // Tạo một Handler để định thời gian trễ
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
