@@ -69,7 +69,7 @@
                                     android:textAllCaps="true"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                    android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <TextView
                                     android:id="@+id/tv_player_info_name"
@@ -82,7 +82,7 @@
                                     android:text="Foxie Nguyễn"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                             </LinearLayout>
                             <LinearLayout
@@ -101,7 +101,7 @@
                                     android:textAllCaps="true"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <TextView
                                     android:id="@+id/tv_player_info_money"
@@ -114,7 +114,7 @@
                                     android:text="100 triệu"
                                     android:textAlignment="center"
                                     android:textColor="#1ACF14"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <ImageView
                                     android:layout_width="30dp"
@@ -139,7 +139,7 @@
                                     android:textAllCaps="true"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <TextView
                                     android:id="@+id/tv_player_info_diamond"
@@ -152,7 +152,7 @@
                                     android:text="100"
                                     android:textAlignment="center"
                                     android:textColor="#38B6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <ImageView
                                     android:layout_width="30dp"
@@ -177,7 +177,7 @@
                                     android:textAllCaps="true"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <TextView
                                     android:id="@+id/tv_player_info_tai_san"
@@ -190,7 +190,7 @@
                                     android:text="100"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                             </LinearLayout>
                             <LinearLayout
@@ -209,7 +209,7 @@
                                     android:textAllCaps="true"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                                 <TextView
                                     android:id="@+id/tv_player_info_correct_question"
@@ -222,7 +222,7 @@
                                     android:text="55"
                                     android:textAlignment="center"
                                     android:textColor="#FFA6FF"
-                                    android:textSize="19sp"
+                                                android:autoSizeTextType="uniform"
                                     android:fontFamily="@font/anton_regular"/>
                             </LinearLayout>
                         </LinearLayout>
@@ -231,12 +231,13 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:weightSum="200"
+                        android:weightSum="100"
                         android:gravity="center">
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_player_info_change_name"
                             android:layout_width="0dp"
                             android:layout_height="60dp"
+                            android:padding="15dp"
                             android:layout_weight="40"
                             android:fontFamily="@font/anton_regular"
                             android:gravity="center"
@@ -246,16 +247,19 @@
                             android:shadowRadius="16"
                             android:text="Đổi tên"
                             android:textColor="#FFA6FF"
-                            android:textSize="19sp"
+                                        android:autoSizeTextType="uniform"
                             android:background="@drawable/bg_round_button_4"/>
                         <View
+                            android:visibility="gone"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:layout_weight="10"/>
                         <androidx.appcompat.widget.AppCompatButton
                             android:id="@+id/btn_player_info_share"
+                            android:visibility="gone"
                             android:layout_width="0dp"
                             android:layout_height="60dp"
+                            android:padding="15dp"
                             android:layout_weight="40"
                             android:fontFamily="@font/anton_regular"
                             android:gravity="center"
@@ -265,7 +269,7 @@
                             android:shadowRadius="16"
                             android:text="Chia sẻ"
                             android:textColor="#FFA6FF"
-                            android:textSize="19sp"
+                                        android:autoSizeTextType="uniform"
                             android:background="@drawable/bg_round_button_4"/>
                         <View
                             android:layout_width="0dp"
@@ -275,6 +279,7 @@
                             android:id="@+id/btn_player_info_sign_in"
                             android:layout_width="0dp"
                             android:layout_height="60dp"
+                            android:padding="15dp"
                             android:layout_weight="40"
                             android:fontFamily="@font/anton_regular"
                             android:gravity="center"
@@ -284,9 +289,10 @@
                             android:shadowRadius="16"
                             android:text="Đăng nhập"
                             android:textColor="#FFA6FF"
-                            android:textSize="19sp"
+                                        android:autoSizeTextType="uniform"
                             android:background="@drawable/bg_round_button_4"/>
                         <View
+                            android:visibility="gone"
                             android:layout_width="0dp"
                             android:layout_height="0dp"
                             android:layout_weight="10"/>
@@ -294,6 +300,7 @@
                             android:id="@+id/btn_player_info_sign_out"
                             android:layout_width="0dp"
                             android:layout_height="60dp"
+                            android:padding="15dp"
                             android:layout_weight="40"
                             android:fontFamily="@font/anton_regular"
                             android:gravity="center"
@@ -303,7 +310,7 @@
                             android:shadowRadius="16"
                             android:text="Đăng xuất"
                             android:textColor="#FFA6FF"
-                            android:textSize="19sp"
+                                        android:autoSizeTextType="uniform"
                             android:background="@drawable/bg_round_button_4"/>
                     </LinearLayout>
                 </LinearLayout>

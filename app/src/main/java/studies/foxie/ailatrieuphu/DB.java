@@ -500,7 +500,7 @@ public class DB {
             int answeredQuestion = playerInfoCursor.getInt(6);
             int correctAnsweredQuestion = playerInfoCursor.getInt(7);
 
-            return new PlayerInfo(playerName, avatarId, frameId, money, diamond, highestQuestionNumber, answeredQuestion, correctAnsweredQuestion);
+            return new PlayerInfo(null, playerName, avatarId, frameId, money, diamond, highestQuestionNumber, answeredQuestion, correctAnsweredQuestion);
 
         } else {
             return null;

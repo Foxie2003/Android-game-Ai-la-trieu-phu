@@ -17,6 +17,9 @@
         android:theme="@style/Theme.AiLaTrieuPhu"
         tools:targetApi="31">
         <activity
+            android:name=".LeaderboardActivity"
+            android:exported="false" />
+        <activity
             android:name=".PlayModeActivity"
             android:exported="false" />
         <activity

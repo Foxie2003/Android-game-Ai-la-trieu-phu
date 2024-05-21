@@ -90,7 +90,6 @@
             android:padding="80dp"
             android:fontFamily="@font/tiltneon_regular_variablefont_xrot_yrot"
             android:gravity="center"
-            android:text="Đâu không phải là tên của nhân vật trong truyện Doraemon?"
             android:textAlignment="center"
             android:autoSizeTextType="uniform"
             android:textColor="@color/white"

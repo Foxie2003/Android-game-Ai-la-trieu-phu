@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private SoundManager backgroundSoundManager, soundEffectManager;
     private TextView tvMoney, tvDiamond, tvName;
-    private ImageView ivLogo, ivAddMoney, ivAddDiamond, ivAvatar, ivMainShop, ivSettings, ivExit;
+    private ImageView ivLogo, ivAddMoney, ivAddDiamond, ivAvatar, ivMainShop, ivLeaderboard, ivSettings, ivExit;
     private ImageButton ibtnPlay;
     SharedPreferences prefs;
     private boolean music;
@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity {
         ivAvatar = findViewById(R.id.iv_main_avatar);
         ibtnPlay = findViewById(R.id.ibtn_main_play);
         ivMainShop = findViewById(R.id.iv_main_shop);
+        ivLeaderboard = findViewById(R.id.iv_main_leaderboard);
         ivSettings = findViewById(R.id.iv_main_settings);
         ivExit = findViewById(R.id.iv_main_exit);
         tvName = findViewById(R.id.tv_main_player_name);
@@ -134,6 +135,13 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
 //                showPlayerInfoDialog();
                 startActivity(new Intent(MainActivity.this, PlayerInfoActivity.class));
+            }
+        });
+        //Bắt sự kiện khi ấn nút "Bảng xếp hạng"
+        ivLeaderboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(MainActivity.this, LeaderboardActivity.class));
             }
         });
         //Bắt sự kiện khi ấn nút "cài đặt"

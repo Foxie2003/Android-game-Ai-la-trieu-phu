@@ -322,14 +322,14 @@ public class PlayerInfoActivity extends AppCompatActivity {
                         PlayerInfo playerInfo = database.getPlayerInfo();
                         HashMap<String, Object> map = new HashMap<>();
                         map.put("id", user.getUid());
-                        map.put("PlayerName", playerInfo.getPlayerName());
-                        map.put("AvatarId", playerInfo.getAvatarId());
-                        map.put("FrameId", playerInfo.getFrameId());
-                        map.put("Money", playerInfo.getMoney());
-                        map.put("Diamond", playerInfo.getDiamond());
-                        map.put("HighestQuestionNumber", playerInfo.getHighestQuestionNumber());
-                        map.put("AnsweredQuestion", playerInfo.getAnsweredQuestion());
-                        map.put("CorrectAnsweredQuestion", playerInfo.getCorrectAnsweredQuestion());
+                        map.put("playerName", playerInfo.getPlayerName());
+                        map.put("avatarId", playerInfo.getAvatarId());
+                        map.put("frameId", playerInfo.getFrameId());
+                        map.put("money", playerInfo.getMoney());
+                        map.put("diamond", playerInfo.getDiamond());
+                        map.put("highestQuestionNumber", playerInfo.getHighestQuestionNumber());
+                        map.put("answeredQuestion", playerInfo.getAnsweredQuestion());
+                        map.put("correctAnsweredQuestion", playerInfo.getCorrectAnsweredQuestion());
 
                         //Kiểm tra xem thông tin người dùng đã tồn tại chưa
                         //ListenerForSingleValueEvent sẽ đọc dữ liệu một lần duy nhất

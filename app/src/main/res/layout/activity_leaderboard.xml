@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@drawable/n_bg"
+    tools:context=".LeaderboardActivity">
+    <TextView
+        android:id="@+id/tv_item_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="5dp"
+        android:shadowColor="#1ACF14"
+        android:shadowDx="0.0"
+        android:shadowDy="0.0"
+        android:shadowRadius="16"
+        android:text="Bảng xếp hạng đại gia"
+        android:textAlignment="center"
+        android:textColor="#1ACF14"
+        android:textSize="30sp"
+        android:fontFamily="@font/anton_regular"/>
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="8dp" />
+</LinearLayout>

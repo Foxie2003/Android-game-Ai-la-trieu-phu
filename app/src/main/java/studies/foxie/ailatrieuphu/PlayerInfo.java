@@ -1,6 +1,7 @@
 package studies.foxie.ailatrieuphu;
 
 public class PlayerInfo {
+    private String id;
     private String playerName;
     private int avatarId;
     private int frameId;
@@ -10,8 +11,12 @@ public class PlayerInfo {
     private int answeredQuestion;
     private int correctAnsweredQuestion;
 
-    // Constructor
-    public PlayerInfo(String playerName, int avatarId, int frameId, long money, long diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion) {
+    // Constructors
+    public PlayerInfo() {
+
+    }
+    public PlayerInfo(String id, String playerName, int avatarId, int frameId, long money, long diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion) {
+        this.id = id;
         this.playerName = playerName;
         this.avatarId = avatarId;
         this.frameId = frameId;
@@ -23,6 +28,15 @@ public class PlayerInfo {
     }
 
     // Getters and setters
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public String getPlayerName() {
         return playerName;
     }
