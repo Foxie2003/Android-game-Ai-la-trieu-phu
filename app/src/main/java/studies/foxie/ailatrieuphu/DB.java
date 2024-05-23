@@ -4,6 +4,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.Nullable;
@@ -14,6 +15,10 @@ public class DB {
     DataBaseHelper db;
     public DB(Context applicationContext) {
         db = new DataBaseHelper(applicationContext, "ALTP.sql", null, 1);
+    }
+    public void recreateDatabase() {
+        db.deleteAllTables();
+        createDatabase();
     }
     public void createDatabase() {
         //Tạo bảng PlayerInfo nếu nó chưa tồn tại
@@ -485,6 +490,23 @@ public class DB {
     public void setUsingFrameId(int frameId) {
         db.QueryData("UPDATE PlayerInfo SET FrameId = " + frameId);
     }
+    public ShopItem getItemById(int id) {
+        //Lấy bản ghi đầu tiên trong bảng Items
+        Cursor data = db.GetData("SELECT * FROM Items LIMIT 1");
+        ShopItem item = new ShopItem();
+        if (data != null && data.moveToFirst()) {
+            // Tạo một đối tượng ShopItem từ dữ liệu Cursor
+            item.setId(data.getInt(0));
+            item.setCategoryId(data.getInt(1));
+            item.setName(data.getString(2));
+            item.setPrice(data.getLong(3));
+            item.setImage(data.getString(4));
+            item.setBought((data.getInt(5) == 1));
+        }
+        data.close();
+
+        return item;
+    }
     public PlayerInfo getPlayerInfo() {
         // Lấy dữ liệu từ CSDL
         Cursor playerInfoCursor = db.GetData("SELECT * FROM PlayerInfo LIMIT 1"); // Lấy dữ liệu của người chơi có tên là 'Khách'
@@ -529,5 +551,21 @@ class DataBaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
 
+    }
+    // Phương thức xóa tất cả các bảng
+    public void deleteAllTables() {
+        SQLiteDatabase db = this.getWritableDatabase();
+
+        // Truy vấn danh sách các bảng
+        Cursor cursor = db.rawQuery("SELECT name FROM sqlite_master WHERE type='table' AND name NOT LIKE 'sqlite_%';", null);
+        if (cursor.moveToFirst()) {
+            do {
+                // Lấy tên bảng
+                String tableName = cursor.getString(0);
+                // Xóa bảng
+                db.execSQL("DROP TABLE IF EXISTS " + tableName);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
     }
 }

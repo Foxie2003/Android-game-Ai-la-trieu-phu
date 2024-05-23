@@ -4,9 +4,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.AppCompatButton;
 
 import android.app.Dialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.media.MediaPlayer;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
@@ -31,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth auth;
     private SoundManager backgroundSoundManager, soundEffectManager;
     private TextView tvMoney, tvDiamond, tvName;
-    private ImageView ivLogo, ivAddMoney, ivAddDiamond, ivAvatar, ivMainShop, ivLeaderboard, ivSettings, ivExit;
+    private ImageView ivLogo, ivAddMoney, ivAddDiamond, ivAvatar, ivChallenge, ivMainShop, ivLeaderboard, ivSettings, ivExit;
     private ImageButton ibtnPlay;
     SharedPreferences prefs;
     private boolean music;
@@ -54,6 +57,7 @@ public class MainActivity extends AppCompatActivity {
         tvDiamond = findViewById(R.id.tv_main_diamond);
         ivAvatar = findViewById(R.id.iv_main_avatar);
         ibtnPlay = findViewById(R.id.ibtn_main_play);
+        ivChallenge = findViewById(R.id.iv_main_challenge);
         ivMainShop = findViewById(R.id.iv_main_shop);
         ivLeaderboard = findViewById(R.id.iv_main_leaderboard);
         ivSettings = findViewById(R.id.iv_main_settings);
@@ -109,6 +113,18 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(playIntent);
                     }
                 }, 400);
+            }
+        });
+        //Bắt sự kiện khi ấn nút "Thách đấu"
+        ivChallenge.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (!isNetworkAvailable(MainActivity.this)) {
+                    // Hiển thị thông báo lỗi cho người dùng
+                    Toast.makeText(MainActivity.this, "Không có kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+                startActivity(new Intent(MainActivity.this, ChallengeActivity.class));
             }
         });
         //Bắt sự kiện khi ấn nút "cửa hàng"
@@ -454,5 +470,10 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+    public boolean isNetworkAvailable(Context context) {
+        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
+        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
     }
 }

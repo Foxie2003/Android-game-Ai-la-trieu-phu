@@ -143,6 +143,17 @@
             android:src="@drawable/selector_play"
             android:background="@color/transparent"/>
         <ImageView
+            android:id="@+id/iv_main_challenge"
+            android:visibility="gone"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:layout_marginTop="-10dp"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/selector_store"
+            android:background="@color/transparent"/>
+        <ImageView
             android:id="@+id/iv_main_shop"
             android:layout_width="match_parent"
             android:layout_height="0dp"

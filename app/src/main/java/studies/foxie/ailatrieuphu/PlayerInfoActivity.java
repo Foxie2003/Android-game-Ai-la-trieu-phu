@@ -371,5 +371,8 @@ public class PlayerInfoActivity extends AppCompatActivity {
             btnSignIn.setVisibility(View.VISIBLE);
             btnSignOut.setVisibility(View.GONE);
         });
+        // Xóa dữ liệu của csdl và tạo lại
+        database.recreateDatabase();
+        this.finish();
     }
 }
