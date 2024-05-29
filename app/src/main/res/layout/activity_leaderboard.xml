@@ -31,7 +31,7 @@
                 android:id="@+id/vp_leaderboard_viewpager"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_above="@id/tl_player_info_tablayout" />
+                android:layout_above="@id/tl_leaderboard_tablayout" />
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>
     <RelativeLayout

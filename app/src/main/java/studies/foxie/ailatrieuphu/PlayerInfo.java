@@ -10,12 +10,13 @@ public class PlayerInfo {
     private int highestQuestionNumber;
     private int answeredQuestion;
     private int correctAnsweredQuestion;
+    private String boughtItems;
 
     // Constructors
     public PlayerInfo() {
 
     }
-    public PlayerInfo(String id, String playerName, int avatarId, int frameId, long money, long diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion) {
+    public PlayerInfo(String id, String playerName, int avatarId, int frameId, long money, long diamond, int highestQuestionNumber, int answeredQuestion, int correctAnsweredQuestion, String boughtItems) {
         this.id = id;
         this.playerName = playerName;
         this.avatarId = avatarId;
@@ -25,6 +26,7 @@ public class PlayerInfo {
         this.highestQuestionNumber = highestQuestionNumber;
         this.answeredQuestion = answeredQuestion;
         this.correctAnsweredQuestion = correctAnsweredQuestion;
+        this.boughtItems = boughtItems;
     }
 
     // Getters and setters
@@ -99,6 +101,14 @@ public class PlayerInfo {
 
     public void setCorrectAnsweredQuestion(int correctAnsweredQuestion) {
         this.correctAnsweredQuestion = correctAnsweredQuestion;
+    }
+
+    public String getBoughtItems() {
+        return boughtItems;
+    }
+
+    public void setBoughtItems(String boughtItems) {
+        this.boughtItems = boughtItems;
     }
 
     // toString() method

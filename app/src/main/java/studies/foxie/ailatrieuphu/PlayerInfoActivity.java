@@ -330,6 +330,7 @@ public class PlayerInfoActivity extends AppCompatActivity {
                         map.put("highestQuestionNumber", playerInfo.getHighestQuestionNumber());
                         map.put("answeredQuestion", playerInfo.getAnsweredQuestion());
                         map.put("correctAnsweredQuestion", playerInfo.getCorrectAnsweredQuestion());
+                        map.put("boughtItems", playerInfo.getBoughtItems());
 
                         //Kiểm tra xem thông tin người dùng đã tồn tại chưa
                         //ListenerForSingleValueEvent sẽ đọc dữ liệu một lần duy nhất
@@ -339,6 +340,7 @@ public class PlayerInfoActivity extends AppCompatActivity {
                                 //Nếu thông tin người dùng đã tồn tại
                                 if (snapshot.exists()) {
                                     Toast.makeText(PlayerInfoActivity.this, "Old player", Toast.LENGTH_SHORT).show();
+                                    database.updatePlayerInfoOnDatabase();
                                 }
                                 //Nếu thông tin người dùng chưa tồn tại
                                 else {
@@ -347,6 +349,8 @@ public class PlayerInfoActivity extends AppCompatActivity {
                                     firebaseDatabase.getReference().child("users").child(user.getUid())
                                             .setValue(map);
                                 }
+                                Toast.makeText(PlayerInfoActivity.this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+                                PlayerInfoActivity.this.finish();
                             }
                             @Override
                             public void onCancelled(@NonNull DatabaseError error) {

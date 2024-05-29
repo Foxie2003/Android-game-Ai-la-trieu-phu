@@ -74,7 +74,7 @@ public class FragmentLeaderboard extends Fragment {
     }
     private void getLeaderboardData() {
         DatabaseReference usersRef = firebaseDatabase.getReference().child("users");
-        usersRef.orderByChild("money").limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
+        usersRef.orderByChild(infoName).limitToLast(10).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 playerInfoList.clear();

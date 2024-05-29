@@ -7,9 +7,20 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class DB {
     DataBaseHelper db;
@@ -277,6 +288,7 @@ public class DB {
     }
     public void setPlayerName(String name) {
         db.QueryData("UPDATE PlayerInfo SET PlayerName = '" + name + "'");
+        updatePlayerInfoOnFirebase();
     }
     public long getMoney() {
         //Lấy bản ghi đầu tiên của cột Money trong bảng PlayerInfo
@@ -292,6 +304,7 @@ public class DB {
     }
     public void setMoney(long money) {
         db.QueryData("UPDATE PlayerInfo SET Money = " + money);
+        updatePlayerInfoOnFirebase();
     }
     //Hàm cộng tiền cho người chơi khi hoàn thành lượt chơi
     public void addMoney(int money) {
@@ -321,6 +334,7 @@ public class DB {
     }
     public void setDiamond(long diamond) {
         db.QueryData("UPDATE PlayerInfo SET Diamond = " + diamond);
+        updatePlayerInfoOnFirebase();
     }
     //Hàm cộng kim cương cho người chơi
     public void addDiamond(int diamond) {
@@ -350,6 +364,7 @@ public class DB {
     }
     private void setHighestQuestionNumber(int questionNumber) {
         db.QueryData("UPDATE PlayerInfo SET HighestQuestionNumber = " + questionNumber);
+        updatePlayerInfoOnFirebase();
     }
     //Hàm cập nhật kỷ lục câu hỏi cao nhất
     public void updateHighestQuestionNumber(int questionNumber) {
@@ -369,6 +384,7 @@ public class DB {
     }
     public void setAnsweredQuestion(int answeredQuestion) {
         db.QueryData("UPDATE PlayerInfo SET AnsweredQuestion = " + answeredQuestion);
+        updatePlayerInfoOnFirebase();
     }
     //Hàm cập nhật số câu hỏi đã trả lời
     public void updateAnsweredQuestion(int answeredQuestion) {
@@ -385,6 +401,7 @@ public class DB {
     }
     public void setCorrectAnsweredQuestion(int correctAnsweredQuestion) {
         db.QueryData("UPDATE PlayerInfo SET CorrectAnsweredQuestion = " + correctAnsweredQuestion);
+        updatePlayerInfoOnFirebase();
     }
     //Hàm cập nhật số câu hỏi đã trả lời đúng
     public void updateCorrectAnsweredQuestion(int correctAnsweredQuestion) {
@@ -411,6 +428,7 @@ public class DB {
         // Update the 'isBought' field of the item with the given itemId
         String query = "UPDATE Items SET isBought = " + newState + " WHERE id = " + itemId;
         db.QueryData(query);
+        updatePlayerInfoOnFirebase();
     }
     public ArrayList<ShopItem> getItemsByCategory(int categoryId) {
         ArrayList<ShopItem> items = new ArrayList<>();
@@ -433,6 +451,23 @@ public class DB {
                 items.add(item);
             } while (data.moveToNext());
 
+            // Đóng Cursor sau khi sử dụng
+            data.close();
+        }
+
+        return items;
+    }
+    public String getBoughtItems() {
+        String items = "";
+
+        // Lấy tất cả bản ghi trong bảng Items với categoryId
+        Cursor data = db.GetData("SELECT * FROM Items WHERE isBought = 1");
+
+        if (data != null && data.moveToFirst()) {
+            do {
+                // Tạo một đối tượng ShopItem từ dữ liệu Cursor
+                items += data.getInt(0) + ",";
+            } while (data.moveToNext());
             // Đóng Cursor sau khi sử dụng
             data.close();
         }
@@ -466,6 +501,21 @@ public class DB {
 
         return items;
     }
+    public void setBoughtItems(String items) {
+        String[] numberArray = items.split(",");
+
+        // Convert the String array to an ArrayList of Integers
+        ArrayList<Integer> numberList = new ArrayList<>();
+        for (String number : numberArray) {
+            try {
+                db.QueryData("UPDATE Items SET isBought = " + 1 + " WHERE id = " + number);
+            }
+            catch (Exception e) {
+
+            }
+        }
+        updatePlayerInfoOnFirebase();
+    }
     public int getUsingAvatarId() {
         //Lấy bản ghi đầu tiên của cột AvatarId trong bảng PlayerInfo
         Cursor data = db.GetData("SELECT AvatarId FROM PlayerInfo LIMIT 1");
@@ -477,6 +527,7 @@ public class DB {
     }
     public void setUsingAvatarId(int avatarId) {
         db.QueryData("UPDATE PlayerInfo SET AvatarId = " + avatarId);
+        updatePlayerInfoOnFirebase();
     }
     public int getUsingFrameId() {
         //Lấy bản ghi đầu tiên của cột FrameId trong bảng PlayerInfo
@@ -489,6 +540,7 @@ public class DB {
     }
     public void setUsingFrameId(int frameId) {
         db.QueryData("UPDATE PlayerInfo SET FrameId = " + frameId);
+        updatePlayerInfoOnFirebase();
     }
     public ShopItem getItemById(int id) {
         //Lấy bản ghi đầu tiên trong bảng Items
@@ -522,10 +574,69 @@ public class DB {
             int answeredQuestion = playerInfoCursor.getInt(6);
             int correctAnsweredQuestion = playerInfoCursor.getInt(7);
 
-            return new PlayerInfo(null, playerName, avatarId, frameId, money, diamond, highestQuestionNumber, answeredQuestion, correctAnsweredQuestion);
+            return new PlayerInfo(null, playerName, avatarId, frameId, money, diamond, highestQuestionNumber, answeredQuestion, correctAnsweredQuestion, getBoughtItems());
 
         } else {
             return null;
+        }
+    }
+    private void updatePlayerInfoOnFirebase() {
+        FirebaseAuth auth;
+        auth = FirebaseAuth.getInstance();
+        //Khởi tạo đối tượng FirebaseDatabase để thực hiện lưu trữ thông tin người dùng
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            PlayerInfo playerInfo = getPlayerInfo();
+            HashMap<String, Object> map = new HashMap<>();
+            map.put("id", user.getUid());
+            map.put("playerName", playerInfo.getPlayerName());
+            map.put("avatarId", playerInfo.getAvatarId());
+            map.put("frameId", playerInfo.getFrameId());
+            map.put("money", playerInfo.getMoney());
+            map.put("diamond", playerInfo.getDiamond());
+            map.put("highestQuestionNumber", playerInfo.getHighestQuestionNumber());
+            map.put("answeredQuestion", playerInfo.getAnsweredQuestion());
+            map.put("correctAnsweredQuestion", playerInfo.getCorrectAnsweredQuestion());
+            map.put("boughtItems", playerInfo.getBoughtItems());
+
+            // Cập nhật thông tin người chơi lên Firebase
+            firebaseDatabase.getReference().child("users").child(user.getUid()).updateChildren(map);
+        }
+    }
+    public void updatePlayerInfoOnDatabase() {
+        FirebaseAuth auth;
+        auth = FirebaseAuth.getInstance();
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        FirebaseUser user = auth.getCurrentUser();
+        if (user != null) {
+            firebaseDatabase.getReference().child("users").child(user.getUid()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot snapshot) {
+                    if (snapshot.exists()) {
+                        // Lấy thông tin người chơi từ Firebase
+                        PlayerInfo playerInfo = snapshot.getValue(PlayerInfo.class);
+
+                        if (playerInfo != null) {
+                            // Cập nhật thông tin người chơi vào SQLite
+                            setPlayerName(playerInfo.getPlayerName());
+                            setUsingAvatarId(playerInfo.getAvatarId());
+                            setUsingFrameId(playerInfo.getFrameId());
+                            setMoney(playerInfo.getMoney());
+                            setDiamond(playerInfo.getDiamond());
+                            setHighestQuestionNumber(playerInfo.getHighestQuestionNumber());
+                            setAnsweredQuestion(playerInfo.getAnsweredQuestion());
+                            setCorrectAnsweredQuestion(playerInfo.getCorrectAnsweredQuestion());
+                            setBoughtItems(playerInfo.getBoughtItems());
+                        }
+                    }
+                }
+
+                @Override
+                public void onCancelled(@NonNull DatabaseError error) {
+
+                }
+            });
         }
     }
 }
