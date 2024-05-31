@@ -108,8 +108,8 @@ public class MainActivity extends AppCompatActivity {
                 new Handler(Looper.getMainLooper()).postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        //Chuyển sang màn hình chơi game sau khi đủ thời gian trễ
-                        Intent playIntent = new Intent(MainActivity.this, PlayActivity.class);
+                        //Chuyển sang màn hình chọn chế độ chơi sau khi đủ thời gian trễ
+                        Intent playIntent = new Intent(MainActivity.this, PlayModeActivity.class);
                         startActivity(playIntent);
                     }
                 }, 400);
@@ -124,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Không có kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.", Toast.LENGTH_LONG).show();
                     return;
                 }
-                startActivity(new Intent(MainActivity.this, ChallengeActivity.class));
+                startActivity(new Intent(MainActivity.this, ChallengeGameActivity.class));
             }
         });
         //Bắt sự kiện khi ấn nút "cửa hàng"

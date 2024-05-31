@@ -5,16 +5,19 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".PlayModeActivity">
+    tools:context=".PlayModeActivity"
+    android:gravity="center">
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="chọn chế độ chơi"/>
+        android:text="Chọn chế độ chơi"/>
     <Button
+        android:id="@+id/btn_play_mode_classic"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Cổ điển"/>
     <Button
+        android:id="@+id/btn_play_mode_challenge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Thách đấu"/>
