@@ -18,6 +18,9 @@
         android:theme="@style/Theme.AiLaTrieuPhu"
         tools:targetApi="31">
         <activity
+            android:name=".RoomActivity"
+            android:exported="false" />
+        <activity
             android:name=".ChallengeActivity"
             android:exported="false" />
         <activity

@@ -424,6 +424,35 @@ public class DB {
         }
         return question;
     }
+    public Question getQuestionById(int id) {
+        //Lấy bản ghi ngẫu nhiên trong bảng Question với questionNumber
+        Cursor data = db.GetData("SELECT * FROM Questions where id = " + id);
+        Question question = new Question();
+        if (data != null && data.moveToFirst()) {
+            question.setId(data.getInt(0));
+            question.setQuestionNumber(data.getInt(1));
+            question.setQuestion(data.getString(2));
+            question.setAnswer1(data.getString(3));
+            question.setAnswer2(data.getString(4));
+            question.setAnswer3(data.getString(5));
+            question.setAnswer4(data.getString(6));
+            question.setCorrectAnswer(data.getInt(7));
+            question.setAudioFileName(data.getString(8));
+        }
+        return question;
+    }
+    public ArrayList<Integer> getRandomQuestionList() {
+        ArrayList<Integer> questionList = new ArrayList<>();
+        //Lấy 15 bản ghi ngẫu nhiên trong bảng Question với questionNumber
+        for (int i = 1; i <= 15; i++) {
+            Cursor data = db.GetData("SELECT * FROM Questions where questionNumber = " + i + " ORDER BY RANDOM() LIMIT 1");
+            if (data != null && data.moveToFirst()) {
+                questionList.add(data.getInt(0));
+            }
+            db.close();
+        }
+        return questionList;
+    }
     public void changeItemBoughtState(int itemId, int newState) {
         // Update the 'isBought' field of the item with the given itemId
         String query = "UPDATE Items SET isBought = " + newState + " WHERE id = " + itemId;

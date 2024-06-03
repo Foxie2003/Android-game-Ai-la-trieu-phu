@@ -78,7 +78,7 @@ public class PlayerInfoActivity extends AppCompatActivity {
         btnSignIn = findViewById(R.id.btn_player_info_sign_in);
         btnSignOut = findViewById(R.id.btn_player_info_sign_out);
 
-        //Khởi tạo đối tượng database và khởi tạo database
+        //Khởi tạo đối tượng database
         database = new DB(PlayerInfoActivity.this.getApplicationContext());
 
         ViewPager viewPager = findViewById(R.id.vp_player_info_viewpager);

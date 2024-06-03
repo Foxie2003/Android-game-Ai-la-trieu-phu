@@ -6,24 +6,52 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".ChallengeActivity"
-    android:gravity="center">
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Chọn chế độ"/>
-    <Button
-        android:id="@+id/btn_challenge_find_match"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tìm đối thủ"/>
-    <Button
-        android:id="@+id/btn_challenge_create_room"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tạo phòng"/>
-    <Button
-        android:id="@+id/btn_challenge_find_room"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Tìm phòng"/>
+    android:background="@drawable/bg_challenge"
+    android:weightSum="100">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="40">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerInParent="true"
+            android:src="@drawable/bg_challenge_logo" />
+    </RelativeLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="60"
+        android:orientation="vertical"
+        android:weightSum="100">
+        <ImageView
+            android:id="@+id/btn_challenge_find_match"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/selector_store"
+            android:background="@color/transparent"/>
+        <ImageView
+            android:id="@+id/btn_challenge_create_room"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/selector_store"
+            android:background="@color/transparent"/>
+        <ImageButton
+            android:id="@+id/btn_challenge_find_room"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="20"
+            android:padding="5dp"
+            android:scaleType="fitCenter"
+            android:src="@drawable/selector_leaderboard"
+            android:background="@color/transparent"/>
+    </LinearLayout>
 </LinearLayout>

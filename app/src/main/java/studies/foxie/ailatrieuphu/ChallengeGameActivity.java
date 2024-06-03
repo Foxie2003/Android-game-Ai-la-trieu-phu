@@ -128,6 +128,8 @@ public class ChallengeGameActivity extends AppCompatActivity {
     private Dialog gameoverDialog;
     private Dialog waitingDialog;
     private Room room;
+    private DatabaseReference roomRef;
+    private ValueEventListener valueEventListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -285,25 +287,10 @@ public class ChallengeGameActivity extends AppCompatActivity {
 
         // Nhận thông tin mode từ Intent
         Intent intent = getIntent();
-        int mode = intent.getIntExtra("mode", 0);
-        Toast.makeText(this, "" + mode, Toast.LENGTH_SHORT).show();
+        userId = intent.getStringExtra("userId");
+        roomId = intent.getStringExtra("roomId");
 
-        //Tìm kiếm phòng chơi hoặc tạo phòng nếu không có
-        userId = FirebaseAuth.getInstance().getCurrentUser().getUid();
-        switch (mode) {
-            case (1):
-                findOrCreateRoom(this, userId);
-                break;
-            case (2):
-                createRoom(userId);
-                break;
-            case (3):
-                findRoomById(this, userId, intent.getStringExtra("roomId"));
-                break;
-            default:
-                this.finish();
-                break;
-        }
+        listenToRoomUpdates(roomId);
 
         //Bắt sự kiện khi ấn vào nút số câu hỏi thì hiện ra layout hiện thị danh sách câu hỏi
         btnQuestionNumber.setOnClickListener(new View.OnClickListener() {
@@ -346,13 +333,15 @@ public class ChallengeGameActivity extends AppCompatActivity {
                                 }
                                 else {
                                     //Load câu hỏi đầu tiên sau khi đủ thời gian trễ
-                                    waitingDialog.dismiss();
+                                    if(waitingDialog != null) {
+                                        waitingDialog.dismiss();
+                                    }
                                     enableAllButtons();
                                     // Hiển thị câu hỏi và cho phép người chơi trả lời
-                                    question = new Question(database.getQuestionByQN(1));
+                                    question = new Question(database.getQuestionById(room.getQuestionList().get(1)));
                                     loadQuestion(question);
                                 }
-//                                question = new Question(database.getQuestionByQN(1));
+//                                question = new Question(database.getQuestionById(room.getQuestionList().get(1));
 //                                loadQuestion(question);
                             }
                         }, 1000);
@@ -702,6 +691,9 @@ public class ChallengeGameActivity extends AppCompatActivity {
         if (soundManager != null) {
             soundManager.stopSound();
         }
+        if (roomRef != null) {
+            roomRef.removeEventListener(valueEventListener);
+        }
     }
 
     @Override
@@ -877,7 +869,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
                                                 answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.selector_answer);
                                                 //Load câu hỏi tiếp theo
                                                 updateAnswer(roomId, userId, true);
-//                                                question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+//                                                question = database.getQuestionById(room.getQuestionList().get(question.getQuestionNumber() + 1);
 //                                                loadQuestion(question);
                                             }
                                         });
@@ -896,7 +888,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
                                                 answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.selector_answer);
                                                 //Load câu hỏi tiếp theo
                                                 updateAnswer(roomId, userId, true);
-//                                                question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+//                                                question = database.getQuestionById(room.getQuestionList().get(question.getQuestionNumber() + 1);
 //                                                loadQuestion(question);
                                             }
                                         });
@@ -912,7 +904,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
                                         answerButtons.get(answerIndex - 1).setBackgroundResource(R.drawable.selector_answer);
                                         //Load câu hỏi tiếp theo
                                         updateAnswer(roomId, userId, true);
-//                                        question = database.getQuestionByQN(question.getQuestionNumber() + 1);
+//                                        question = database.getQuestionById(room.getQuestionList().get(question.getQuestionNumber() + 1);
 //                                        loadQuestion(question);
                                     }
                                 }
@@ -1298,11 +1290,14 @@ public class ChallengeGameActivity extends AppCompatActivity {
     private void showGameOverDialog() {
         DatabaseReference roomRef = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomId);
         roomRef.child("status").setValue("gameover");
+        //Xóa event listener firebase
+        roomRef.removeEventListener(valueEventListener);
         //Dừng đồng hồ đếm ngược
         if(countDownTimer != null) {
             countDownTimer.cancel();
         }
         //Cộng tiền cho người chơi
+        prizeResult = 0;
         database.addMoney(prizeResult);
         //Phát âm thanh kết thúc trò chơi
         soundManager.playSound(R.raw.mc_game_over, volumnSound);
@@ -1315,6 +1310,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         LinearLayout layoutMain = gameoverDialog.findViewById(R.id.layout_gameover_main);
         RelativeLayout layoutText = gameoverDialog.findViewById(R.id.layout_gameover_text);
         TextView tvPrizeResult = gameoverDialog.findViewById(R.id.tv_gameover_prize);
+        TextView tvMessage = gameoverDialog.findViewById(R.id.tv_gameover_message);
         TextView tvQuestionNumber = gameoverDialog.findViewById(R.id.tv_gameover_question_number);
         TextView tvHighQN = gameoverDialog.findViewById(R.id.tv_gameover_high_question_number);
         AppCompatButton btnGoHome = gameoverDialog.findViewById(R.id.btn_gameover_home);
@@ -1322,6 +1318,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         //Áp dụng animation cho chữ
         Animation growingLight = AnimationUtils.loadAnimation(ChallengeGameActivity.this, R.anim.growing_light);
         layoutText.startAnimation(growingLight);
+        tvMessage.setText("Chúc bạn may mắn lần sau");
         //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
         database.updateHighestQuestionNumber(question.getQuestionNumber() - 1);
         //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng
@@ -1389,22 +1386,25 @@ public class ChallengeGameActivity extends AppCompatActivity {
                     super.onAdDismissedFullScreenContent();
                     //Hiển thị dialog kết thúc trò chơi
                     gameoverDialog.show();
-                    showRetryDialog();
+//                    showRetryDialog();
                 }
             });
         }
         else {
             //Hiển thị dialog kết thúc trò chơi
             gameoverDialog.show();
-            showRetryDialog();
+//            showRetryDialog();
         }
     }
     //Hàm hiển thị dialog chiến thắng trò chơi
     private void showWinDialog() {
+        //Xóa event listener firebase
+        roomRef.removeEventListener(valueEventListener);
         //Dừng đồng hồ đếm ngược
         if(countDownTimer != null) {
             countDownTimer.cancel();
         }
+        prizeResult = prizeResult * 2;
         //Cộng tiền cho người chơi
         database.addMoney(prizeResult);
         //Phát âm thanh chiến thắng trò chơi
@@ -1418,6 +1418,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         LinearLayout layoutMain = winDialog.findViewById(R.id.layout_win_main);
         RelativeLayout layoutText = winDialog.findViewById(R.id.layout_gameover_text);
         TextView tvPrizeResult = winDialog.findViewById(R.id.tv_win_prize);
+        TextView tvMessage = winDialog.findViewById(R.id.tv_win_message);
         TextView tvQuestionNumber = winDialog.findViewById(R.id.tv_win_question_number);
         TextView tvHighQN = winDialog.findViewById(R.id.tv_win_high_question_number);
         AppCompatButton btnGoHome = winDialog.findViewById(R.id.btn_win_home);
@@ -1425,6 +1426,10 @@ public class ChallengeGameActivity extends AppCompatActivity {
         //Áp dụng animation cho chữ
         Animation growingLight = AnimationUtils.loadAnimation(ChallengeGameActivity.this, R.anim.growing_light);
         layoutText.startAnimation(growingLight);
+        tvMessage.setText("Chúc mừng bạn đã là người chiến thắng");
+        if(question == null) {
+            question = database.getQuestionById(room.getQuestionList().get(1));
+        }
         //Update kỉ lục (Nếu là kỉ lục mới thì mới lưu lại)
         database.updateHighestQuestionNumber(question.getQuestionNumber());
         //Update số câu hỏi đã trả lời và số câu hỏi đã trả lời đúng
@@ -1733,92 +1738,6 @@ public class ChallengeGameActivity extends AppCompatActivity {
         Animation growingLight = AnimationUtils.loadAnimation(ChallengeGameActivity.this, R.anim.growing_light);
         tvClose.startAnimation(growingLight);
     }
-    //Hàm hiển thị dialog thử lại
-    private void showRetryDialog() {
-        // Tạo dialog thử lại
-        Dialog retryDialog = new Dialog(ChallengeGameActivity.this, android.R.style.Theme_Black_NoTitleBar_Fullscreen);
-        retryDialog.setContentView(R.layout.dialog_retry);
-        retryDialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);
-        // Ẩn thanh công cụ
-        retryDialog.getWindow().getDecorView().setSystemUiVisibility(View.SYSTEM_UI_FLAG_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY);
-        ImageView btnExitYes = retryDialog.findViewById(R.id.iv_retry_yes);
-        AppCompatButton btnExitNo = retryDialog.findViewById(R.id.btn_retry_no);
-        RelativeLayout layoutWrap = retryDialog.findViewById(R.id.layout_retry_wrap);
-        TextView tvClose = retryDialog.findViewById(R.id.tv_retry_close);
-        TextView tvRetryCountDown = retryDialog.findViewById(R.id.tv_retry_countdown);
-
-        // Khi bấm chữ xem thì hiển thị quảng cáo
-        btnExitYes.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (rewardedAd != null) {
-                    Activity activityContext = ChallengeGameActivity.this;
-                    rewardedAd.show(activityContext, new OnUserEarnedRewardListener() {
-                        @Override
-                        public void onUserEarnedReward(@NonNull RewardItem rewardItem) {
-                            //Bỏ highlight đáp án đúng
-                            answerButtons.get(question.getCorrectAnswer() - 1).setBackgroundResource(R.drawable.selector_answer);
-                            //Bỏ highlight đáp án được chọn
-                            answerButtons.forEach(button -> {
-                                button.setBackgroundResource(R.drawable.selector_answer);
-                            });
-                            //Ẩn dialog kết thúc trò chơi
-                            gameoverDialog.dismiss();
-                            //Kích hoạt các button trở lại
-                            enableAllButtons();
-                            //Load lại câu hỏi
-                            question = database.getQuestionByQN(question.getQuestionNumber());
-                            loadQuestion(question);
-                        }
-                    });
-                    loadRewardedAd();
-                } else {
-                    Log.d(TAG, "The rewarded ad wasn't ready yet.");
-                }
-            }
-        });
-        // Khi bấm chữ hủy thì đóng dialog
-        btnExitNo.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Thoát dialog
-                retryDialog.dismiss();
-            }
-        });
-        tvClose.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Thoát dialog
-                retryDialog.dismiss();
-            }
-        });
-        layoutWrap.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Thoát dialog
-                retryDialog.dismiss();
-            }
-        });
-        // Áp dụng animation cho chữ
-        Animation growingLight = AnimationUtils.loadAnimation(ChallengeGameActivity.this, R.anim.growing_light);
-        tvClose.startAnimation(growingLight);
-
-        // Hiển thị dialog
-        retryDialog.show();
-
-        // Bắt đầu bộ đếm ngược
-        new CountDownTimer(6000, 1000) {
-            public void onTick(long millisUntilFinished) {
-                // Mỗi lần đếm, cập nhật giá trị của textView Countdown
-                tvRetryCountDown.setText(millisUntilFinished / 1000 + "s");
-            }
-
-            public void onFinish() {
-                // Khi bộ đếm kết thúc, tự động đóng dialog
-                retryDialog.dismiss();
-            }
-        }.start();
-    }
     //Load quảng cáo video có thưởng
     private void loadRewardedAd() {
         AdRequest adRequest = new AdRequest.Builder().build();
@@ -1896,100 +1815,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
         }
         return imageFile;
     }
-    public boolean isNetworkAvailable(Context context) {
-        ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo activeNetworkInfo = connectivityManager.getActiveNetworkInfo();
-        return activeNetworkInfo != null && activeNetworkInfo.isConnected();
-    }
-    public void findOrCreateRoom(Context context, String userId) {
-        if (!isNetworkAvailable(context)) {
-            // Hiển thị thông báo lỗi cho người dùng
-            Toast.makeText(context, "Không có kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.", Toast.LENGTH_LONG).show();
-            return;
-        }
 
-        DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference().child("rooms");
-
-        roomsRef.orderByChild("status").equalTo("waiting").limitToFirst(1).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    // Có phòng chờ, người chơi sẽ tham gia phòng này
-                    for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
-                        roomId = snapshot.getKey();
-                        joinRoom(roomId, userId);
-                        break;
-                    }
-                } else {
-                    // Không có phòng chờ, tạo phòng mới
-                    createRoom(userId);
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) {
-                // Xử lý lỗi nếu có
-            }
-        });
-    }
-    public void joinRoom(String roomId, String userId) {
-        DatabaseReference roomRef = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomId);
-        roomRef.child("player2Id").setValue(userId);
-        roomRef.child("status").setValue("ongoing");
-        listenToRoomUpdates(roomId);
-        showWaiting("Đang vào phòng " + roomId);
-    }
-
-    public void createRoom(String userId) {
-        final DatabaseReference roomsRef = FirebaseDatabase.getInstance().getReference().child("rooms");
-        generateUniqueRoomId(roomsRef, new RoomIdCallback() {
-            @Override
-            public void onRoomIdGenerated(String id) {
-                roomId = id;
-                Room room = new Room(userId, null, 0, 0, 1, userId, "waiting");
-                roomsRef.child(roomId).setValue(room);
-                listenToRoomUpdates(roomId);
-                showWaiting("Đang tìm đối thủ...\nID phòng: " + roomId);
-            }
-        });
-    }
-    public void findRoomById(Context context, String userId, String id) {
-        if (!isNetworkAvailable(context)) {
-            // Hiển thị thông báo lỗi cho người dùng
-            Toast.makeText(context, "Không có kết nối mạng. Vui lòng kiểm tra kết nối và thử lại.", Toast.LENGTH_LONG).show();
-            return;
-        }
-        DatabaseReference roomsRef2 = FirebaseDatabase.getInstance().getReference().child("rooms").child(id);
-        roomsRef2.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                if(snapshot.exists()) {
-                    room = snapshot.getValue(Room.class);
-                    if(room.status.equals("waiting")) {
-                        roomId = snapshot.getKey();
-                        joinRoom(roomId, userId);
-                    }
-                    else {
-                        if(!id.equals(roomId)) {
-                            Toast.makeText(context, "Không tìm thấy phòng chơi" + roomId + " = " + id, Toast.LENGTH_SHORT).show();
-                            ChallengeGameActivity.this.finish();
-                        }
-                    }
-                }
-                else {
-                    if(!id.equals(roomId)) {
-                        Toast.makeText(context, "Không tìm thấy phòng chơi" + roomId + " = " + id, Toast.LENGTH_SHORT).show();
-                        ChallengeGameActivity.this.finish();
-                    }
-                }
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
     public void updateAnswer(String roomId, String userId, boolean isCorrect) {
         DatabaseReference roomRef = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomId);
 
@@ -1997,7 +1823,6 @@ public class ChallengeGameActivity extends AppCompatActivity {
             @Override
             public Transaction.Result doTransaction(MutableData mutableData) {
                 Room room = mutableData.getValue(Room.class);
-
                 if (room == null) {
                     return Transaction.success(mutableData);
                 }
@@ -2033,16 +1858,14 @@ public class ChallengeGameActivity extends AppCompatActivity {
         });
     }
     public void listenToRoomUpdates(String roomId) {
-        DatabaseReference roomRef = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomId);
-        roomRef.addValueEventListener(new ValueEventListener() {
+        roomRef = FirebaseDatabase.getInstance().getReference().child("rooms").child(roomId);
+        valueEventListener = new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                Toast.makeText(ChallengeGameActivity.this, userId + ", " + room.status + ", " + room.turn, Toast.LENGTH_SHORT).show();
                 room = dataSnapshot.getValue(Room.class);
                 if (room != null && room.status.equals("ongoing")) {
                     //Nếu là lượt chơi đầu thì bắt đầu trận đấu
                     if(room.player1Id.equals(room.turn) && room.currentQuestionIndex == 1) {
-                        Toast.makeText(ChallengeGameActivity.this, "1", Toast.LENGTH_SHORT).show();
                         if(waitingDialog != null) {
                             waitingDialog.dismiss();
                         }
@@ -2054,16 +1877,14 @@ public class ChallengeGameActivity extends AppCompatActivity {
                     }
                     // Cập nhật giao diện dựa trên trạng thái mới của phòng chơi
                     else if (userId.equals(room.turn)) {
-                        Toast.makeText(ChallengeGameActivity.this, "2", Toast.LENGTH_SHORT).show();
                         if(waitingDialog != null) {
                             waitingDialog.dismiss();
                         }
                         enableAllButtons();
                         // Hiển thị câu hỏi và cho phép người chơi trả lời
-                        question = new Question(database.getQuestionByQN(room.currentQuestionIndex));
+                        question = new Question(database.getQuestionById(room.getQuestionList().get(room.currentQuestionIndex)));
                         loadQuestion(question);
                     } else {
-                        Toast.makeText(ChallengeGameActivity.this, "3", Toast.LENGTH_SHORT).show();
                         // Hiển thị thông báo chờ lượt
                         disableAllButtons();
                         showWaiting("Xin vui lòng chờ đến lượt của bạn");
@@ -2074,7 +1895,7 @@ public class ChallengeGameActivity extends AppCompatActivity {
                         showWinDialog();
                     }
                 }
-                else if(room.status.equals("waiting")) {
+                else if(room != null && room.status.equals("waiting")) {
                     Toast.makeText(ChallengeGameActivity.this, "Room is Waiting", Toast.LENGTH_SHORT).show();
                 }
                 else {
@@ -2086,7 +1907,8 @@ public class ChallengeGameActivity extends AppCompatActivity {
             public void onCancelled(@NonNull DatabaseError databaseError) {
                 // Xử lý lỗi nếu có
             }
-        });
+        };
+        roomRef.addValueEventListener(valueEventListener);
     }
     //Hàm hiển thị dialog chờ
     private void showWaiting(String message) {
@@ -2111,40 +1933,4 @@ public class ChallengeGameActivity extends AppCompatActivity {
 
         waitingDialog.show();
     }
-    private void generateUniqueRoomId(final DatabaseReference roomsRef, final RoomIdCallback callback) {
-        final String roomId = KeyGenerator.generateKey();
-        roomsRef.child(roomId).addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot snapshot) {
-                if (snapshot.exists()) {
-                    // Key already exists, generate a new one
-                    generateUniqueRoomId(roomsRef, callback);
-                } else {
-                    // Key is unique
-                    callback.onRoomIdGenerated(roomId);
-                }
-            }
-
-            @Override
-            public void onCancelled(DatabaseError error) {
-                // Handle possible errors
-            }
-        });
-    }
-}
-class KeyGenerator {
-    private static final String CHAR_POOL = "0123456789";
-    private static final int KEY_LENGTH = 6;
-    private static Random random = new Random();
-
-    public static String generateKey() {
-        StringBuilder key = new StringBuilder(KEY_LENGTH);
-        for (int i = 0; i < KEY_LENGTH; i++) {
-            key.append(CHAR_POOL.charAt(random.nextInt(CHAR_POOL.length())));
-        }
-        return key.toString();
-    }
-}
-interface RoomIdCallback {
-    void onRoomIdGenerated(String roomId);
 }
